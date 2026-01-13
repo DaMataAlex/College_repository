@@ -17,7 +17,7 @@ void hand_made_concatenation(char string1[], char string2[]) {
         j++;
     }
 
-    string1[i] = '\0';
+    string1[i - 1] = '\0';
 }
 
 int main() {
