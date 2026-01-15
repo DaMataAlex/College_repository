@@ -4,40 +4,6 @@
 #include <string.h>
 #define max 50
 
-//funcoes
-void limpar_terminal() {
-#ifdef _WIN32
-    system("cls");
-#else
-    system("clear");
-#endif
-}
-
-int menu_principal(){
-
-    printf("PLATAFORMA DE GERENCIAMENTO DE ASSINATURAS\n\n");
-    printf("Escolha umas das seguintes opcoes:\n");
-    printf("1 - Cadastrar um novo usuario.\n");
-    printf("2 - Cadastrar um novo servico de streaming.\n");
-    printf("3 - Consultar dados de uma assinatura.\n\n");
-
-    int a;
-    scanf("%d", &a);
-    return a;
-}
-
-int consulta_assinatura(int a){
-
-    printf("CONSULTA DE DADOS DE ASSINATURAS\n\n");
-    printf("Escolha umas das seguintes opcoes:\n");
-    printf("1 - Consulta por cliente.\n");
-    printf("2 - Consulta por plataforma.\n");
-    printf("3 - Consultar assinatura especifica.\n\n");
-    
-    scanf("%d", &a);
-    return a;
-}
-
 //structs
 typedef struct {
     int dia;
@@ -75,6 +41,53 @@ typedef struct {
 
 }ASSINATURAS;
 
+//funcoes
+void limpar_terminal() {
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
+}
+
+int menu_principal(){
+
+    printf("PLATAFORMA DE GERENCIAMENTO DE ASSINATURAS\n\n");
+    printf("Escolha umas das seguintes opcoes:\n");
+    printf("1 - Cadastrar um novo usuario.\n");
+    printf("2 - Cadastrar um novo servico de streaming.\n");
+    printf("3 - Consultar dados de uma assinatura.\n\n");
+
+    int a;
+    scanf("%d", &a);
+    return a;
+}
+
+int cadastro_novo_usuario(){
+
+    USUARIOS novo_usuario;
+
+    printf("Digite o nome do usuario:\n");
+    fgets(novo_usuario.nome, max, stdin);
+    limpar_terminal();
+
+    printf("Digite o cpf do usuario no formato XXX.XXX.XXX-XX:\n");
+    fgets(novo_usuario.cpf, 14, stdin);
+    limpar_terminal();
+}
+
+int consulta_assinatura(int a){
+
+    printf("CONSULTA DE DADOS DE ASSINATURAS\n\n");
+    printf("Escolha umas das seguintes opcoes:\n");
+    printf("1 - Consulta por cliente.\n");
+    printf("2 - Consulta por plataforma.\n");
+    printf("3 - Consultar assinatura especifica.\n\n");
+    
+    scanf("%d", &a);
+    return a;
+}
+
 int main(){
 
     int teste;
@@ -94,9 +107,9 @@ int main(){
         }
     }
     limpar_terminal();
-    
-    if(teste == 1){
 
+    if(teste == 1){
+        cadastro_novo_usuario();
         limpar_terminal();
     }else if(teste == 2){
 
