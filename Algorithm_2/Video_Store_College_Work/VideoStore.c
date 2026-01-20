@@ -4,6 +4,7 @@
 #include <string.h>
 #define max 50
 #define max_usuarios 50
+int idglobal_usuarios = 1000;
 
 //menus
 void limpar_terminal() {
@@ -92,7 +93,8 @@ typedef struct {
 
 typedef struct {
   char nome[max];
-  char cpf[15]; //campo unico da struct & contandos hifens e pontos
+  char cpf[15]; //contandos hifens e pontos
+  int id_usuario; //campo unico da struct
   char phone[14]; //contando parenteses e hifens
   char email[max];
 
@@ -214,9 +216,12 @@ void cadastrar_usuario(){
   limpar_terminal();
   printf("\nUsuario cadastrado com sucesso!\n");
   getchar();
+
   limpar_terminal();
 
+  idglobal_usuarios++;
   total_usuarios++;
+  usuarios[max_usuarios].id_usuario = idglobal_usuarios + 1;
 }
 
 //funcoes de consulta
@@ -256,6 +261,7 @@ void consultar_usuario(){
       printf("Usuario encontrado!\n\n");
       printf("Nome: %s\n", usuarios[i].nome);
       printf("CPF: %s\n", usuarios[i].cpf);
+      printf("Id do usuario: %d\n", usuarios[i].id_usuario);
       printf("Telefone: %s\n", usuarios[i].phone);
       printf("Email: %s\n", usuarios[i].email);
 
