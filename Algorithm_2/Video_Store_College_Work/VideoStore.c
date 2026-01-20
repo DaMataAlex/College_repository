@@ -219,10 +219,6 @@ void cadastrar_usuario(){
   total_usuarios++;
 }
 
-void cadastrar_plataforma(){
-
-}
-
 //funcoes de consulta
 void consultar_usuario(){
 
