@@ -226,6 +226,9 @@ void cadastrar_usuario(){
     }
   }
 
+  usuarios[total_usuarios].id_usuario = idglobal_usuarios + 1;
+  idglobal_usuarios++;
+
   //esse getchar eh pra forcar quem esta usando a apertar qualquer tecla pra continuar, mas a gente pode mudar isso depois
   limpar_terminal();
   printf("\nUsuario cadastrado com sucesso!\n");
@@ -315,6 +318,9 @@ void cadastrar_plataforma(){
   getchar();
   limpar_terminal();
   total_plataformas++;
+
+  plataformas[total_plataformas].id_plataforma = idglobal_plataformas + 1;
+  idglobal_plataformas++;
 
 }
 
