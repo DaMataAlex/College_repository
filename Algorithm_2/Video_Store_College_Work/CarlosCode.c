@@ -31,18 +31,21 @@ typedef struct {
   int ativa;
   float valor_pago;
 
-}ASSINATURAS;
+} Assinatura;
 
 // --- Variáveis Globais (Banco de Dados em Memória) ---
 
 Cliente lista_de_clientes[TAMANHO_MAXIMO_LISTA];
 Plataforma lista_de_plataformas[TAMANHO_MAXIMO_LISTA];
+Assinatura lista_de_assinaturas[TAMANHO_MAXIMO_LISTA];
 
 int total_clientes_cadastrados = 0;
 int total_plataformas_cadastradas = 0;
+int total_assinaturas_cadastradas = 0;
 
 long int gerador_id_clientes = 1000;
 long int gerador_id_plataformas = 5000;
+long int gerador_id_assinaturas = 10000;
 
 // Códigos para identificar a operação
 const int OPERACAO_CONSULTAR = 1;
@@ -77,7 +80,7 @@ void ler_entrada_usuario(char *buffer_destino, int tamanho_buffer, const char *m
 // --- Funções de Validação de Formato ---
 
 int validar_formato_cpf(const char *texto_cpf) {
-  return (texto_cpf[3] == '.' && texto_cpf[7] == '.' && texto_cpf[11] == '-');
+  return(texto_cpf[3] == '.' && texto_cpf[7] == '.' && texto_cpf[11] == '-');
 }
 
 int validar_formato_telefone(const char *texto_telefone) {
@@ -92,7 +95,7 @@ int validar_formato_url(const char *texto_url) {
   return (strchr(texto_url, '.') != NULL);
 }
 
-void ler_e_validar_entrada(char *buffer, int tamanho, const char *msg, const char *msg_erro, int (*funcao_validadora)(const char *)) {
+void ler_e_validar_entrada(char *buffer, int tamanho, const char *msg, const char *msg_erro, int (*funcao_validadora)(const char *)) { 
   ler_entrada_usuario(buffer, tamanho, msg);
 
   while (!funcao_validadora(buffer)) {
