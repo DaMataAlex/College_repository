@@ -3,7 +3,7 @@
 
 int main(){
 
-    //setting the variable that corresponds the size of the array, which it's given by the user
+    //setting the variable that corresponds to the size of the array, which it's given by the user
     int array_size;
     scanf("%d", &array_size);
 
