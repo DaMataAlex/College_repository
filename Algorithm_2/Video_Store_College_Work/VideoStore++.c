@@ -52,6 +52,33 @@ void LimparBuffer(){
     while((c = getchar()) != '\n' && c != EOF);
 }
 
+void RetomarMenu(USUARIOS *pBancoUsuarios, PLATAFORMAS *pBancoPlataformas, ASSINATURAS *pBancoAssinaturas, int *total_clientes, int *total_plataformas){
+    LimparTerminal();
+
+    //retomar menu do cadastro de usuarios
+    if(pBancoPlataformas == NULL && pBancoAssinaturas == NULL && total_plataformas == NULL){
+        if(pBancoUsuarios[*total_clientes].phone[0] == '\0'){
+            printf("-- Cadastro de clientes --\n\n");
+            printf("Digite o nome do cliente: ");
+            printf("%s\n", pBancoUsuarios[*total_clientes].nome);
+            printf("Digite o CPF do cliente: ");
+            printf("%s\n", pBancoUsuarios[*total_clientes].cpf);
+
+        }else if(pBancoUsuarios[*total_clientes].email[0] == '\0'){
+            printf("-- Cadastro de clientes --\n\n");
+            printf("Digite o nome do cliente: ");
+            printf("%s\n", pBancoUsuarios[*total_clientes].nome);
+            printf("Digite o CPF do cliente: ");
+            printf("%s\n", pBancoUsuarios[*total_clientes].cpf);
+            printf("Digite o telefone do usuario: ");
+            printf("%s\n", pBancoUsuarios[*total_clientes].phone);
+        }
+    }
+}
+
+//======================================
+//   FUNCOES DE VALIDACAO E FORMATACAO
+//======================================
 char *ValidarEFormatarCpf(char cpf[15]){
     //validando cpf
     //formato: 000.000.000-00
@@ -117,30 +144,6 @@ char *ValidarEFormatarEmail(char email[MAX_CHAR]){
     char *pEmail = email;
     return pEmail;
 
-}
-
-void RetomarMenu(USUARIOS *pBancoUsuarios, PLATAFORMAS *pBancoPlataformas, ASSINATURAS *pBancoAssinaturas, int *total_clientes, int *total_plataformas){
-    LimparTerminal();
-
-    //retomar menu do cadastro de usuarios
-    if(pBancoPlataformas == NULL && pBancoAssinaturas == NULL && total_plataformas == NULL){
-        if(pBancoUsuarios[*total_clientes].phone[0] == '\0'){
-            printf("-- Cadastro de clientes --\n\n");
-            printf("Digite o nome do cliente: ");
-            printf("%s\n", pBancoUsuarios[*total_clientes].nome);
-            printf("Digite o CPF do cliente: ");
-            printf("%s\n", pBancoUsuarios[*total_clientes].cpf);
-
-        }else if(pBancoUsuarios[*total_clientes].email[0] == '\0'){
-            printf("-- Cadastro de clientes --\n\n");
-            printf("Digite o nome do cliente: ");
-            printf("%s\n", pBancoUsuarios[*total_clientes].nome);
-            printf("Digite o CPF do cliente: ");
-            printf("%s\n", pBancoUsuarios[*total_clientes].cpf);
-            printf("Digite o telefone do usuario: ");
-            printf("%s\n", pBancoUsuarios[*total_clientes].phone);
-        }
-    }
 }
 
 //--- GERENCIAMENTO DE CLIENTES ---
