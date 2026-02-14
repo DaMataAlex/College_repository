@@ -5,15 +5,14 @@
 #define MAX 50
 #define MAX_CHAR 50
 
-
 //=========================
 //  PRINCIPAIS  STRUCTS
 //=========================
 typedef struct {
   char nome[MAX];
-  char cpf[15]; //campo unico da struct; 15 contandos hifens e pontos
-  long int id_usuario; 
-  char phone[14]; //contando parenteses e hifens
+  char cpf[15]; //campo unico da struct
+  long int id_usuario;
+  char phone[15];
   char email[MAX];
     
 }USUARIOS;
@@ -35,7 +34,6 @@ typedef struct {
   float valor_pago;
 
 }ASSINATURAS;
-
 
 //=========================
 //   FUNCOES AUXILIARES
@@ -71,52 +69,53 @@ char *ValidarEFormatarCpf(char cpf[15]){
     return pCPF;
 }
 
-char *ValidarEFormatarTelefone(char telefone[12]){
-    char telefone_formatado[15];
-    int todos_digitos = 0;
-
-    //validando o telefone
-    for(int i = 0; i < 11; i++){
-        if(isdigit(telefone[i])){
-            todos_digitos++;
-        }
-    }
-
-    while(todos_digitos != 11){
-        todos_digitos = 0;
+char *ValidarEFormatarTelefone(char telefone[15]){
+    //validando telefone
+    //formato: (00)90000-0000
+    while(telefone[0] != '(' && telefone[3] != ')' && telefone[9] != '-' && strlen(telefone) != 15){
         LimparTerminal();
-        printf("Digite o telefone no formato valido!\n(Somente numeros)\n\n");
-        fgets(telefone, 12, stdin);
+        printf("Por favor, insira um telefone valido!\n");
+        printf("(00)90000-0000\n\n");
+        fgets(telefone, 15, stdin);
+    }
+    telefone[strcspn(telefone, "\n")] = '\0';
 
-        for(int i = 0; i < 11; i++){
-            if(isdigit(telefone[i])){
-                todos_digitos++;
+    LimparTerminal();
+
+    char *pTelefone = telefone;
+    return pTelefone;
+
+}
+
+char *ValidarEFormatarEmail(char email[MAX_CHAR]){
+    //validando email
+    //precisa ter um @
+    int arroba = 0;
+
+    while(1){
+        for(int i = 0 ; i < strlen(email); i++){
+            if(email[i] == '@'){
+                arroba = 1;
+                break;
             }
         }
-    }
-    LimparTerminal();
-    
-    int i = 0; //indice do telefone que a gente tem
-    int j = 0; //indice do telefone que a gente vai montar
 
-    while(i < 11){
-
-        if(j == 0){
-            telefone_formatado[j] = '(';
-            telefone_formatado[j++] = telefone[i++];
-        }else if(j == 2){
-            telefone_formatado[j++] = ')';
-        }else if(j == 8){
-            telefone_formatado[j++] = '-';
-        }else{
-            telefone_formatado[j++] = telefone[i++];
+        if(arroba  == 1){
+            break;
         }
+
+        LimparTerminal();
+        printf("Por favor, insira um Email valido!\n");
+        fgets(email, 15, stdin);
+        
     }
 
-    telefone_formatado[j] = '\0';
+    email[strcspn(email, "\n")] = '\0';
 
-    char *pTelefoneFormatado = telefone_formatado;
-    return pTelefoneFormatado;
+    LimparTerminal();
+
+    char *pEmail = email;
+    return pEmail;
 
 }
 
@@ -129,21 +128,20 @@ void RetomarMenu(USUARIOS *pBancoUsuarios, PLATAFORMAS *pBancoPlataformas, ASSIN
             printf("-- Cadastro de clientes --\n\n");
             printf("Digite o nome do cliente: ");
             printf("%s\n", pBancoUsuarios[*total_clientes].nome);
-            printf("Digite o CPF do cliente (000.000.000-00): ");
+            printf("Digite o CPF do cliente: ");
             printf("%s\n", pBancoUsuarios[*total_clientes].cpf);
 
         }else if(pBancoUsuarios[*total_clientes].email[0] == '\0'){
             printf("-- Cadastro de clientes --\n\n");
             printf("Digite o nome do cliente: ");
             printf("%s\n", pBancoUsuarios[*total_clientes].nome);
-            printf("Digite o CPF do cliente (000.000.000-00): ");
+            printf("Digite o CPF do cliente: ");
             printf("%s\n", pBancoUsuarios[*total_clientes].cpf);
             printf("Digite o telefone do usuario: ");
             printf("%s\n", pBancoUsuarios[*total_clientes].phone);
         }
     }
 }
-
 
 //--- GERENCIAMENTO DE CLIENTES ---
 void CadastrarNovoCliente(USUARIOS *pBancoUsuarios, int *total_clientes){
@@ -163,18 +161,30 @@ void CadastrarNovoCliente(USUARIOS *pBancoUsuarios, int *total_clientes){
     LimparBuffer();
 
     //cadastro do telefone
-    printf("Digite o telefone do usuario: ");
-    char telefone[12], *pTelefoneFormatado;
-    fgets(telefone, 12, stdin);
-    pTelefoneFormatado = ValidarEFormatarTelefone(telefone);
+    printf("Digite o telefone do usuario (00)90000-0000: ");
+    fgets(pBancoUsuarios[*total_clientes].phone, 15, stdin);
+    char *pTelefoneFormatado = ValidarEFormatarTelefone(pBancoUsuarios[*total_clientes].phone);
     strcpy(pBancoUsuarios[*total_clientes].phone, pTelefoneFormatado);
-    RetomarMenu(pBancoUsuarios, '\0', '\0', total_clientes, NULL);
+    RetomarMenu(pBancoUsuarios, NULL, NULL, total_clientes, NULL);
     LimparBuffer();
 
+    //cadastro email
     printf("Digite o Email do usuario: ");
+    fgets(pBancoUsuarios[*total_clientes].email, MAX_CHAR, stdin);
+    char *pEmailFormatado = ValidarEFormatarEmail(pBancoUsuarios[*total_clientes].email);
+    strcpy(pBancoUsuarios[*total_clientes].email, pEmailFormatado);
+    RetomarMenu(pBancoUsuarios, NULL, NULL, total_clientes, NULL);
 
+    //cadastrando o id do usuario
+    pBancoUsuarios[*total_clientes].id_usuario = 1000 + *total_clientes;
+
+    //mensagem de cadastro concluido
+    LimparTerminal();
+    printf("Usuario cadastrado com sucesso!\n");
+    printf("Id do usuario: %d\n\n", pBancoUsuarios[*total_clientes].id_usuario);
+    getchar();
+    LimparTerminal();
 }
-
 
 //--- MENUS ---
 int MenuPrincipal(int opcao){
@@ -235,9 +245,9 @@ int main(){
         if(opcao == 1){
             opcao = GerenciamentoDeClientes();
             if(opcao == 1){
-                (*pTotalClientes)++;
-                pBancoUsuarios = realloc (pBancoUsuarios, *pTotalClientes * sizeof(USUARIOS));
+                pBancoUsuarios = realloc (pBancoUsuarios, (total_clientes + 1) * sizeof(USUARIOS));
                 CadastrarNovoCliente(pBancoUsuarios, pTotalClientes);
+                total_clientes++;
             }
         }else if(opcao == 2){
             exit(0);
