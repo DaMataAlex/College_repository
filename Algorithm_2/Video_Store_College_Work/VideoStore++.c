@@ -146,6 +146,36 @@ char *ValidarEFormatarEmail(char email[MAX_CHAR]){
 
 }
 
+char *ValidarURL(char URL[MAX_CHAR]){
+    
+    int tem_ponto = 0;
+    for(int i = 0; URL[i] != '\n'; i++){
+        if(URL[i] == '.'){
+            tem_ponto = 1;
+            break;
+        }
+    }
+    
+    while(tem_ponto == 0){
+        LimparTerminal();
+        printf("Digite um site valido:\n");
+        fgets(URL, MAX_CHAR, stdin);
+        for(int i = 0; URL[i] != '\n'; i++){
+            if(URL[i] == '.'){
+                tem_ponto = 1;
+                break;
+            }
+        }
+    }
+    
+    URL[strcspn(URL,"\n")] = '\0';
+
+    LimparTerminal();
+
+    char *pURL = URL;
+    return pURL;
+}
+
 //--- GERENCIAMENTO DE CLIENTES ---
 void CadastrarNovoCliente(USUARIOS *pBancoUsuarios, int *total_clientes){
 
@@ -184,7 +214,43 @@ void CadastrarNovoCliente(USUARIOS *pBancoUsuarios, int *total_clientes){
     //mensagem de cadastro concluido
     LimparTerminal();
     printf("Usuario cadastrado com sucesso!\n");
-    printf("Id do usuario: %d\n\n", pBancoUsuarios[*total_clientes].id_usuario);
+    printf("Id do usuario: %ld\n\n", pBancoUsuarios[*total_clientes].id_usuario);
+    getchar();
+    LimparTerminal();
+}
+
+//--- GERENCIAMENTO DE PLATAFORMAS ---
+void CadastrarNovaPlataforma(PLATAFORMAS *pBancoPlataformas, int *total_plataformas){
+
+    //cadastro do nome
+    printf("-- Cadastro de plataformas --\n\n");
+    printf("Digite o nome da plataforma: ");
+    fgets(pBancoPlataformas[*total_plataformas].nome_plataforma, MAX_CHAR, stdin);
+    pBancoPlataformas[*total_plataformas].nome_plataforma[strcspn(pBancoPlataformas[*total_plataformas].nome_plataforma, "\n")] = '\0';
+
+    //cadastrando a categoria
+    printf("Digite a categoria da plataforma(filmes, musica, etc): ");
+    fgets(pBancoPlataformas[*total_plataformas].categoria, MAX_CHAR, stdin);
+    pBancoPlataformas[*total_plataformas].categoria[strcspn(pBancoPlataformas[*total_plataformas].categoria, "\n")] = '\0';
+
+    //cadastrando o valor
+    printf("Digite o valor do servico: R$");
+    scanf("%f", &pBancoPlataformas[*total_plataformas].preco);
+    LimparBuffer();
+
+    //cadastrando o site
+    printf("Digite o site da plataforma: ");
+    fgets(pBancoPlataformas[*total_plataformas].site_url, MAX_CHAR, stdin);
+    char *pURL = ValidarURL(pBancoPlataformas[*total_plataformas].site_url);
+    strcpy(pBancoPlataformas[*total_plataformas].site_url, pURL);
+
+    //cadastrando o id da plataforma
+    pBancoPlataformas[*total_plataformas].id_plataforma = 5000 + *total_plataformas;
+
+    //mensagem de cadastro concluido
+    LimparTerminal();
+    printf("Plataforma cadastrada com sucesso!\n");
+    printf("Id da plataforma: %ld\n\n", pBancoPlataformas[*total_plataformas].id_plataforma);
     getchar();
     LimparTerminal();
 }
@@ -234,12 +300,45 @@ int GerenciamentoDeClientes(){
     
 }
 
+int GerenciamentoDePlataformas(){
+    printf("-- Gerenciamento de plataformas --\n\n");
+    printf("1 - Cadastrar uma nova plataforma.\n");
+    printf("2 - Buscar uma plataforma.\n");
+    printf("3 - Alterar dados de uma plataforma.\n");
+    printf("4 - Excluir uma plataforma.\n");
+    printf("5 - Voltar\n\n");
+
+    int opcao;
+    scanf("%d", &opcao);
+    getchar();//consumindo a quebra de linha
+
+    while(opcao < 1 || opcao > 5){
+        LimparTerminal();
+        printf("Escolha uma opcao valida!\n");
+        return GerenciamentoDePlataformas();
+    }
+    
+    LimparTerminal();
+
+    return opcao;
+    
+}
+
 int main(){
 
+    //criando o "banco de dados" dos clientes e alocando, inicialmente a quantidade MAX para esse banco
+    //fazendo o mesmo para as plataformas e assinaturas, sem usar variaveis globais
     int total_clientes = 0;
-
     int *pTotalClientes = &total_clientes;
     USUARIOS *pBancoUsuarios = (USUARIOS*) calloc(MAX, sizeof(USUARIOS));
+
+    int total_plataformas = 0;
+    int *pTotalPlataformas = &total_plataformas;
+    PLATAFORMAS *pBancoPlataformas = (PLATAFORMAS*) calloc(MAX, sizeof(PLATAFORMAS));
+
+    int total_assinaturas = 0;
+    int *pTotalAssinaturas = &total_assinaturas;
+    ASSINATURAS *pBancoAssinaturas = (ASSINATURAS*) calloc(MAX, sizeof(ASSINATURAS));
 
 
     while(1){
@@ -251,9 +350,20 @@ int main(){
                 pBancoUsuarios = realloc (pBancoUsuarios, (total_clientes + 1) * sizeof(USUARIOS));
                 CadastrarNovoCliente(pBancoUsuarios, pTotalClientes);
                 total_clientes++;
+            }else if(opcao == 2){
+                exit(0);
             }
         }else if(opcao == 2){
-            exit(0);
+            opcao = GerenciamentoDePlataformas();
+            if(opcao == 1){
+                pBancoPlataformas = realloc (pBancoPlataformas, (total_plataformas + 1) * sizeof(PLATAFORMAS));
+                CadastrarNovaPlataforma(pBancoPlataformas, pTotalPlataformas);
+                total_plataformas++;
+            }else if(opcao == 2){
+                exit(0);
+            }else if(opcao == 3){
+                exit(0);
+            }
         }else if(opcao == 3){
             exit(0);
         }else{
