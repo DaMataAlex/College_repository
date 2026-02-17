@@ -219,6 +219,34 @@ void CadastrarNovoCliente(USUARIOS *pBancoUsuarios, int *total_clientes){
     LimparTerminal();
 }
 
+void BuscarCliente(USUARIOS *pBancoUsuarios, int *total_clientes){
+    LimparTerminal();
+
+    printf("Digite o CPF do cliente que deseja buscar: ");
+    char CPF[15];
+    char *pCPF;
+    pCPF = CPF;
+    fgets(CPF, 15, stdin);
+    pCPF = ValidarEFormatarCpf(CPF);
+
+    for(int i = 0; i < *total_clientes; i++){
+        if(strcmp(CPF, pBancoUsuarios[*total_clientes].cpf) == 0){
+            printf("Usuario encontrado!\n\n");
+            printf("%s\n", pBancoUsuarios[*total_clientes].nome);
+            printf("%s\n", pBancoUsuarios[*total_clientes].cpf);
+            printf("%ld\n", pBancoUsuarios[*total_clientes].id_usuario);
+            printf("%s\n", pBancoUsuarios[*total_clientes].phone);
+            printf("%s\n", pBancoUsuarios[*total_clientes].email);
+
+        }else{
+            printf("Usuario nao encontrado!\n\n");
+            getchar();
+            LimparTerminal();
+        }
+    }
+
+    
+}
 //--- GERENCIAMENTO DE PLATAFORMAS ---
 void CadastrarNovaPlataforma(PLATAFORMAS *pBancoPlataformas, int *total_plataformas){
 
@@ -324,6 +352,7 @@ int GerenciamentoDePlataformas(){
     
 }
 
+//funcao principal
 int main(){
 
     //criando o "banco de dados" dos clientes e alocando, inicialmente a quantidade MAX para esse banco
@@ -351,7 +380,7 @@ int main(){
                 CadastrarNovoCliente(pBancoUsuarios, pTotalClientes);
                 total_clientes++;
             }else if(opcao == 2){
-                exit(0);
+                BuscarCliente(pBancoUsuarios, pTotalClientes);
             }
         }else if(opcao == 2){
             opcao = GerenciamentoDePlataformas();
