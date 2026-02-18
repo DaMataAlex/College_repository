@@ -82,7 +82,7 @@ void RetomarMenu(USUARIOS *pBancoUsuarios, PLATAFORMAS *pBancoPlataformas, ASSIN
 char *ValidarEFormatarCpf(char cpf[15]){
     //validando cpf
     //formato: 000.000.000-00
-    while(cpf[3] != '.' && cpf[7] != '.' && cpf[11] != '-' && strlen(cpf) != 15){
+    while(cpf[3] != '.' || cpf[7] != '.' || cpf[11] != '-'){
         LimparTerminal();
         printf("Por favor, insira um CPF valido!\n");
         printf("(000.000.000-00)\n\n");
@@ -99,7 +99,9 @@ char *ValidarEFormatarCpf(char cpf[15]){
 char *ValidarEFormatarTelefone(char telefone[15]){
     //validando telefone
     //formato: (00)90000-0000
-    while(telefone[0] != '(' && telefone[3] != ')' && telefone[9] != '-' && strlen(telefone) != 15){
+    telefone[strcspn(telefone, "\n")] = '\0';
+    
+    while(telefone[0] != '(' || telefone[3] != ')' || telefone[9] != '-'){
         LimparTerminal();
         printf("Por favor, insira um telefone valido!\n");
         printf("(00)90000-0000\n\n");
@@ -224,25 +226,36 @@ void BuscarCliente(USUARIOS *pBancoUsuarios, int *total_clientes){
 
     printf("Digite o CPF do cliente que deseja buscar: ");
     char CPF[15];
-    char *pCPF;
-    pCPF = CPF;
+    char *pCPF = CPF;
     fgets(CPF, 15, stdin);
-    pCPF = ValidarEFormatarCpf(CPF);
+    pCPF = ValidarEFormatarCpf(pCPF);
+
+    int encontrado = 0;
+
+
 
     for(int i = 0; i < *total_clientes; i++){
-        if(strcmp(CPF, pBancoUsuarios[*total_clientes].cpf) == 0){
+        if(strcmp(pCPF, pBancoUsuarios[i].cpf) == 0){
+            LimparTerminal();
+            encontrado = 1;
             printf("Usuario encontrado!\n\n");
-            printf("%s\n", pBancoUsuarios[*total_clientes].nome);
-            printf("%s\n", pBancoUsuarios[*total_clientes].cpf);
-            printf("%ld\n", pBancoUsuarios[*total_clientes].id_usuario);
-            printf("%s\n", pBancoUsuarios[*total_clientes].phone);
-            printf("%s\n", pBancoUsuarios[*total_clientes].email);
-
-        }else{
-            printf("Usuario nao encontrado!\n\n");
+            printf("%s\n", pBancoUsuarios[i].nome);
+            printf("%s\n", pBancoUsuarios[i].cpf);
+            printf("%ld\n", pBancoUsuarios[i].id_usuario);
+            printf("%s\n", pBancoUsuarios[i].phone);
+            printf("%s\n", pBancoUsuarios[i].email);
             getchar();
             LimparTerminal();
+
         }
+    }
+
+    if(encontrado == 0){
+        LimparTerminal();
+        printf("Cliente nao encontrado!\n");
+        getchar();
+        getchar();
+        LimparTerminal();
     }
 
     
@@ -309,8 +322,8 @@ int GerenciamentoDeClientes(){
     printf("1 - Cadastrar um novo cliente.\n");
     printf("2 - Buscar um cliente.\n");
     printf("3 - Alterar dados de um cliente.\n");
-    printf("4 - Excluir um cliente;\n");
-    printf("5 - Voltar\n\n");
+    printf("4 - Excluir um cliente.\n");
+    printf("5 - Voltar.\n\n");
 
     int opcao;
     scanf("%d", &opcao);
@@ -334,7 +347,7 @@ int GerenciamentoDePlataformas(){
     printf("2 - Buscar uma plataforma.\n");
     printf("3 - Alterar dados de uma plataforma.\n");
     printf("4 - Excluir uma plataforma.\n");
-    printf("5 - Voltar\n\n");
+    printf("5 - Voltar.\n\n");
 
     int opcao;
     scanf("%d", &opcao);
