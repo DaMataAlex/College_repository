@@ -1,15 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define MAX 100
 
 int main(){
 
-    char c[18];
+    FILE *pArquivo = fopen("entrada.txt", "r");
 
-    int a = strlen(c);
-    printf("%d\n", a);
+    int ContadorDeQuebraDeLinas = 0;
+    char c;
 
+    while((c = fgetc(pArquivo)) != EOF){
+        if(c == '\n'){
+            ContadorDeQuebraDeLinas++;
+        }
+    }
+
+    printf("O texto tem %d linha(s).\n", ContadorDeQuebraDeLinas);
+    fclose(pArquivo);
+    
     return 0;
 
 }
