@@ -20,7 +20,6 @@ typedef struct{
     char CEP[10];
 }ENDERECO;
 
-
 typedef struct {
     char nome[MAX];
     char nascimento[11];
