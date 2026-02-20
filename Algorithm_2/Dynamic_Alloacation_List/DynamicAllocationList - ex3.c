@@ -144,5 +144,7 @@ int main(){
         
     }
 
+    free(banco_funcionarios);
+
     return 0;
 }
