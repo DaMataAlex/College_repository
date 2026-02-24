@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <ctype.h>
 #include <stdlib.h>
 
 int main(){
@@ -6,18 +7,17 @@ int main(){
     FILE *pArquivo = fopen("arq.txt", "r");
 
     char c;
-    int counter = 0;
-    
+    int vogais = 0;
+
     while((c = fgetc(pArquivo)) != EOF){
-        if(c == '\n'){
-            counter++;
+        tolower(c);
+        if(c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u'){
+            vogais++;
         }
     }
 
-    printf("O arquivo possui %d linhas.\n", counter);
-
+    printf("O arquivo possui %d vogais.\n", vogais);
     fclose(pArquivo);
 
     return 0;
-
 }

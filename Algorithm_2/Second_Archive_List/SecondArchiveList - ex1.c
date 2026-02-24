@@ -41,6 +41,13 @@ void abrir_arquivo(FILE *pArquivo){
         pArquivo = fopen("arq.txt", "w");
     }
 
+    if(pArquivo == NULL){
+        limpar_terminal();
+        printf("Nao foi possivel abrir o arquivo!\n");
+        fclose(pArquivo);
+        exit(0);
+    }
+
     limpar_terminal();
 
     char c;
@@ -58,7 +65,7 @@ void abrir_arquivo(FILE *pArquivo){
 void ler_arquivo(FILE *pArquivo){
     pArquivo = fopen("arq.txt", "r");
 
-    int c;
+    char c;
 
     while ((c = fgetc(pArquivo)) != EOF){
         printf("%c", c);

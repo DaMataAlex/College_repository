@@ -79,20 +79,37 @@ void RetomarMenu(USUARIOS *pBancoUsuarios, PLATAFORMAS *pBancoPlataformas, ASSIN
 //======================================
 //   FUNCOES DE VALIDACAO E FORMATACAO
 //======================================
-char *ValidarEFormatarCpf(char cpf[15]){
+char *ValidarEFormatarCpf(char cpf_nao_formatado[13]){
     //validando cpf
-    //formato: 000.000.000-00
-    while(cpf[3] != '.' || cpf[7] != '.' || cpf[11] != '-'){
+    //cpf recebido: 00000000000 -> 13 caracteres contando o \0
+    //formato que a gente quer: 000.000.000-00 -> 15 caracteres contando o \0
+
+    while(strlen(cpf_nao_formatado) != 12){
         LimparTerminal();
         printf("Por favor, insira um CPF valido!\n");
-        printf("(000.000.000-00)\n\n");
-        fgets(cpf, 15, stdin);
+        printf("(Somente numeros)\n\n");
+        fgets(cpf_nao_formatado, 13, stdin);
     }
-    cpf[strcspn(cpf, "\n")] = '\0';
+
+    char cpf_formatado[15];
+
+    int j = 0;
+    for(int i = 0; i < 14; i++){
+        if(i == 3 || i == 7){
+            cpf_formatado[i] = '.';
+        }else if(i == 11){
+            cpf_formatado[i] = '-';
+        }else{
+            cpf_formatado[i] = cpf_nao_formatado[j];
+            j++;
+        }
+    }
+
+    cpf_formatado[strcspn(cpf_formatado, "\n")] = '\0';
 
     LimparTerminal();
 
-    char *pCPF = cpf;
+    char *pCPF = cpf_formatado;
     return pCPF;
 }
 
@@ -188,12 +205,12 @@ void CadastrarNovoCliente(USUARIOS *pBancoUsuarios, int *total_clientes){
     pBancoUsuarios[*total_clientes].nome[strcspn(pBancoUsuarios[*total_clientes].nome, "\n")] = '\0';
 
     //cadastro do cpf
-    printf("Digite o CPF do cliente (000.000.000-00): ");
-    fgets(pBancoUsuarios[*total_clientes].cpf, 15, stdin);
-    char *pCPF = ValidarEFormatarCpf(pBancoUsuarios[*total_clientes].cpf);
+    printf("Digite o CPF do cliente (Somente numeros): ");
+    char CPF_nao_formatado[13];
+    fgets(CPF_nao_formatado, 13, stdin);
+    char *pCPF = ValidarEFormatarCpf(CPF_nao_formatado);
     strcpy(pBancoUsuarios[*total_clientes].cpf, pCPF);
     RetomarMenu(pBancoUsuarios, NULL, NULL, total_clientes, NULL);
-    LimparBuffer();
 
     //cadastro do telefone
     printf("Digite o telefone do usuario (00)90000-0000: ");
