@@ -23,6 +23,7 @@ int verificar_letra(int *comparado, int modelo){
 
     return existe;
 }
+
 int main(){
 
     //definindo os ponteiros e as variaveis
