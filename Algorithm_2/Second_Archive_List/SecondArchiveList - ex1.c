@@ -27,7 +27,21 @@ int menu(){
 
 //gerenciamento do arquivo
 void abrir_arquivo(FILE *pArquivo){
-    pArquivo = fopen("arq.txt", "w");
+    limpar_terminal();
+    printf("Como voce deseja abrir o arquivo?\n\n");
+    printf("1 - Escrever no arquivo já existente caso ele exista.\n");
+    printf("2 - Sobrescrever o arquivo existe.\n");
+    
+    int opcao;
+    scanf("%d", &opcao);
+
+    if(opcao == 1){ 
+        pArquivo = fopen("arq.txt", "a");
+    }else if(opcao == 2){
+        pArquivo = fopen("arq.txt", "w");
+    }
+
+    limpar_terminal();
 
     char c;
 

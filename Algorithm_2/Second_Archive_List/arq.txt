@@ -1,2 +1,2 @@
 
-Esse arquivo sera sobrescrito toda vez que o programa for compilado!
+This is an archive.
