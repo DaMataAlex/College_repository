@@ -35,14 +35,6 @@ typedef struct {
 
 // --- Variáveis Globais (Banco de Dados em Memória) ---
 
-Cliente lista_de_clientes[TAMANHO_MAXIMO_LISTA];
-Plataforma lista_de_plataformas[TAMANHO_MAXIMO_LISTA];
-Assinatura lista_de_assinaturas[TAMANHO_MAXIMO_LISTA];
-
-int total_clientes_cadastrados = 0;
-int total_plataformas_cadastradas = 0;
-int total_assinaturas_cadastradas = 0;
-
 long int gerador_id_clientes = 1000;
 long int gerador_id_plataformas = 5000;
 long int gerador_id_assinaturas = 10000;
@@ -127,12 +119,6 @@ int buscar_indice_plataforma_por_nome(const char *nome_buscado) {
 // --- Funções de Cadastro ---
 
 void realizar_cadastro_cliente() {
-  if (total_clientes_cadastrados >= TAMANHO_MAXIMO_LISTA) {
-    printf("Erro: Limite de clientes atingido!\n");
-    getchar();
-    return;
-  }
-
   Cliente *novo_cliente = &lista_de_clientes[total_clientes_cadastrados];
 
   limpar_tela_terminal();
@@ -355,6 +341,23 @@ void gerenciar_plataformas(int tipo_operacao) {
 
 // --- Menus do Sistema ---
 
+int menu_principal(){
+    limpar_tela_terminal();
+    printf("SISTEMA DE GESTAO DE ASSINATURAS\n\n");
+    printf("1. Realizar Cadastro\n");
+    printf("2. Consultar Dados\n");
+    printf("3. Alterar Informacoes\n");
+    printf("4. Excluir Dados\n");
+    printf("5. Sair do Sistema\n\n");
+    printf("Escolha uma opcao: ");
+
+    int opcao_menu_principal;
+    scanf("%d", &opcao_menu_principal);
+    getchar(); // Consumir quebra de linha
+
+    return opcao_menu_principal;
+}
+
 int exibir_submenu_e_obter_escolha(const char *titulo_submenu) {
   limpar_tela_terminal();
   int escolha_usuario;
@@ -371,57 +374,57 @@ int exibir_submenu_e_obter_escolha(const char *titulo_submenu) {
 }
 
 int main() {
-  int opcao_menu_principal;
 
-  while (1) {
-    limpar_tela_terminal();
-    printf("SISTEMA DE GESTAO DE ASSINATURAS\n\n");
-    printf("1. Realizar Cadastro\n");
-    printf("2. Consultar Dados\n");
-    printf("3. Alterar Informacoes\n");
-    printf("4. Excluir Dados\n");
-    printf("5. Sair do Sistema\n\n");
-    printf("Escolha uma opcao: ");
+    //definindo as variáveis todas na main para evitar variáveis globais
+    int total_clientes_cadastrados = 0;
+    int total_plataformas_cadastradas = 0;
+    int total_assinaturas_cadastradas = 0;
 
-    scanf("%d", &opcao_menu_principal);
-    getchar(); // Consumir quebra de linha
+    Cliente lista_de_clientes[total_clientes_cadastrados];
+    Plataforma lista_de_plataformas[total_plataformas_cadastradas];
+    Assinatura lista_de_assinaturas[total_assinaturas_cadastradas];
 
-    if (opcao_menu_principal == 5) {
-      printf("Encerrando sistema...\n");
-      break;
+    int opcao_menu_principal;
+
+    while (1) {
+        opcao_menu_principal = menu_principal();
+
+        if (opcao_menu_principal == 5) {
+        printf("Encerrando sistema...\n");
+        break;
+        }
+
+        if (opcao_menu_principal < 1 || opcao_menu_principal > 5) {
+        printf("Opcao invalida! Tente novamente.");
+        getchar();
+        continue;
+        }
+
+        // --- Navegação ---
+
+        if (opcao_menu_principal == 1) { // CADASTRO
+        int escolha = exibir_submenu_e_obter_escolha("MENU DE CADASTRO");
+
+        if (escolha == 1) {
+            realizar_cadastro_cliente();
+        } else if (escolha == 2) {
+            realizar_cadastro_plataforma();
+        }
+        } else { // CONSULTAR (2), ALTERAR (3), EXCLUIR (4)
+        char *titulos_menus[] = { "MENU DE CONSULTA", "MENU DE ALTERACAO", "MENU DE EXCLUSAO" };
+
+        // Reutiliza o menu
+        int escolha = exibir_submenu_e_obter_escolha(titulos_menus[opcao_menu_principal - 2]);
+
+        // Define o tipo de operação baseado no menu principal (2->1, 3->2, 4->3)
+        int tipo_operacao = opcao_menu_principal - 1;
+
+        if (escolha == 1) {
+            gerenciar_clientes(tipo_operacao);
+        } else if (escolha == 2) {
+            gerenciar_plataformas(tipo_operacao);
+        }
+        }
     }
-
-    if (opcao_menu_principal < 1 || opcao_menu_principal > 5) {
-      printf("Opcao invalida! Tente novamente.");
-      getchar();
-      continue;
-    }
-
-    // --- Navegação ---
-
-    if (opcao_menu_principal == 1) { // CADASTRO
-      int escolha = exibir_submenu_e_obter_escolha("MENU DE CADASTRO");
-
-      if (escolha == 1) {
-        realizar_cadastro_cliente();
-      } else if (escolha == 2) {
-        realizar_cadastro_plataforma();
-      }
-    } else { // CONSULTAR (2), ALTERAR (3), EXCLUIR (4)
-      char *titulos_menus[] = { "MENU DE CONSULTA", "MENU DE ALTERACAO", "MENU DE EXCLUSAO" };
-
-      // Reutiliza o menu
-      int escolha = exibir_submenu_e_obter_escolha(titulos_menus[opcao_menu_principal - 2]);
-
-      // Define o tipo de operação baseado no menu principal (2->1, 3->2, 4->3)
-      int tipo_operacao = opcao_menu_principal - 1;
-
-      if (escolha == 1) {
-        gerenciar_clientes(tipo_operacao);
-      } else if (escolha == 2) {
-        gerenciar_plataformas(tipo_operacao);
-      }
-    }
-  }
   return 0;
 }
