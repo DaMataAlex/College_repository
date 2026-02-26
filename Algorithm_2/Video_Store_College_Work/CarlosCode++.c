@@ -375,56 +375,52 @@ int exibir_submenu_e_obter_escolha(const char *titulo_submenu) {
 
 int main() {
 
-    //definindo as variáveis todas na main para evitar variáveis globais
-    int total_clientes_cadastrados = 0;
-    int total_plataformas_cadastradas = 0;
-    int total_assinaturas_cadastradas = 0;
+  //definindo as variáveis todas na main para evitar variáveis globais
+  int total_clientes_cadastrados = 0;
+  int total_plataformas_cadastradas = 0;
+  int total_assinaturas_cadastradas = 0;
 
-    Cliente lista_de_clientes[total_clientes_cadastrados];
-    Plataforma lista_de_plataformas[total_plataformas_cadastradas];
-    Assinatura lista_de_assinaturas[total_assinaturas_cadastradas];
+  Cliente lista_de_clientes[total_clientes_cadastrados];
+  Plataforma lista_de_plataformas[total_plataformas_cadastradas];
+  Assinatura lista_de_assinaturas[total_assinaturas_cadastradas];
 
-    int opcao_menu_principal;
+  int opcao_menu_principal;
 
-    while (1) {
-        opcao_menu_principal = menu_principal();
+  while (1) {
+    opcao_menu_principal = menu_principal();
 
-        if (opcao_menu_principal == 5) {
-        printf("Encerrando sistema...\n");
-        break;
-        }
-
-        if (opcao_menu_principal < 1 || opcao_menu_principal > 5) {
-        printf("Opcao invalida! Tente novamente.");
-        getchar();
-        continue;
-        }
-
-        // --- Navegação ---
-
-        if (opcao_menu_principal == 1) { // CADASTRO
-        int escolha = exibir_submenu_e_obter_escolha("MENU DE CADASTRO");
-
-        if (escolha == 1) {
-            realizar_cadastro_cliente();
-        } else if (escolha == 2) {
-            realizar_cadastro_plataforma();
-        }
-        } else { // CONSULTAR (2), ALTERAR (3), EXCLUIR (4)
-        char *titulos_menus[] = { "MENU DE CONSULTA", "MENU DE ALTERACAO", "MENU DE EXCLUSAO" };
-
-        // Reutiliza o menu
-        int escolha = exibir_submenu_e_obter_escolha(titulos_menus[opcao_menu_principal - 2]);
-
-        // Define o tipo de operação baseado no menu principal (2->1, 3->2, 4->3)
-        int tipo_operacao = opcao_menu_principal - 1;
-
-        if (escolha == 1) {
-            gerenciar_clientes(tipo_operacao);
-        } else if (escolha == 2) {
-            gerenciar_plataformas(tipo_operacao);
-        }
-        }
+    if (opcao_menu_principal == 5) {
+      printf("Encerrando sistema...\n");
+      break;
     }
+
+    if (opcao_menu_principal < 1 || opcao_menu_principal > 5) {
+      printf("Opcao invalida! Tente novamente.");
+      getchar();
+      continue;
+    }
+
+    // --- Navegação ---
+
+    char *titulos_menus[] = {"MENU DE CADASTRO", "MENU DE CONSULTA", "MENU DE ALTERACAO", "MENU DE EXCLUSAO"};
+
+    int escolha = exibir_submenu_e_obter_escolha(titulos_menus[opcao_menu_principal - 1]);
+
+    int tipo_operacao = opcao_menu_principal - 1;
+  
+    if (escolha == 1) {
+      if (tipo_operacao == 0){
+        realizar_cadastro_cliente();
+      }else{
+        gerenciar_clientes(tipo_operacao);
+      }
+    }else if (escolha == 2) {
+      if (tipo_operacao == 0){
+        realizar_cadastro_plataforma();
+      }else{
+        gerenciar_plataformas(tipo_operacao);
+      }
+    }
+  }
   return 0;
 }
