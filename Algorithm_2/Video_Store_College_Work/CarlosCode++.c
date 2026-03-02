@@ -71,12 +71,67 @@ void ler_entrada_usuario(char *buffer_destino, int tamanho_buffer, const char *m
 
 // --- Funções de Validação de Formato ---
 
-int validar_formato_cpf(const char *texto_cpf) {
-  return(texto_cpf[3] == '.' && texto_cpf[7] == '.' && texto_cpf[11] == '-');
+int validar_e_formatar_cpf(char *cpf_temporario, char *cpf_do_banco_de_clientes){
+  cpf_temporario[strcspn(cpf_temporario, "\n")] = '\0';
+
+  if(strlen(cpf_temporario) != 11){
+    return 0;
+  }
+
+  for(int i = 0; i < 11; i++) {
+    if(!isdigit(cpf_temporario[i])){
+      return 0;
+    }
+  }
+
+  //formata o cpf
+  int j = 0;
+  for (int i = 0; i < 11; i++) {
+    if (j == 3 || j == 7){
+      cpf_do_banco_de_clientes[j++] = '.';
+    }
+    if (j == 11){
+      cpf_do_banco_de_clientes[j++] = '-';
+    }
+    cpf_do_banco_de_clientes[j++] = cpf_temporario[i];
+  }
+
+  cpf_do_banco_de_clientes[j] = '\0';
+
+  return 1;
 }
 
-int validar_formato_telefone(const char *texto_telefone) {
-  return (texto_telefone[0] == '(' && texto_telefone[3] == ')' && texto_telefone[10] == '-');
+int valida_e_formatar_telefone(char *telefone_temporario, char *telefone_do_banco_de_clientes){
+  telefone_temporario[strcspn(telefone_temporario, "\n")] = '\0';
+
+  if(strlen(telefone_temporario) != 11){
+    return 0;
+  }
+
+  for(int i = 0; i < 11; i++) {
+    if(!isdigit(telefone_temporario[i])){
+      return 0;
+    }
+  }
+
+  //formata o telefone
+  int j = 0;
+  for (int i = 0; i < 11; i++) {
+    if (j == 0){
+      telefone_do_banco_de_clientes[j++] = '(';
+    }
+    if (j == 3){
+      telefone_do_banco_de_clientes[j++] = ')';
+    }
+    if (j == 9){
+      telefone_do_banco_de_clientes[j++] = '-';
+    }
+    telefone_do_banco_de_clientes[j++] = telefone_temporario[i];
+  }
+
+  telefone_do_banco_de_clientes[j] = '\0';
+
+  return 1;
 }
 
 int validar_presenca_arroba(const char *texto_email) {
@@ -87,12 +142,14 @@ int validar_formato_url(const char *texto_url) {
   return (strchr(texto_url, '.') != NULL);
 }
 
-void ler_e_validar_entrada(char *buffer, int tamanho, const char *msg, const char *msg_erro, int (*funcao_validadora)(const char *)) { 
+void ler_e_validar_entrada(char *buffer, char *dado_a_formatar, int tamanho, const char *msg, const char *msg_erro, int (*funcao_validadora)(const char *)){ 
   ler_entrada_usuario(buffer, tamanho, msg);
 
-  while (!funcao_validadora(buffer)) {
+  while (funcao_validadora(buffer, dado_a_formatar) != 1) {
+    limpar_tela_terminal();
     printf("%s\n", msg_erro);
     ler_entrada_usuario(buffer, tamanho, msg);
+    limpar_tela_terminal();
   }
 }
 
@@ -118,17 +175,19 @@ int buscar_indice_plataforma_por_nome(const char *nome_buscado) {
 
 // --- Funções de Cadastro ---
 
-void realizar_cadastro_cliente() {
-  Cliente *novo_cliente = &lista_de_clientes[total_clientes_cadastrados];
+void realizar_cadastro_cliente(int total_clientes, Cliente *lista_clientes) {
+  lista_clientes = (Cliente*) realloc(lista_clientes, total_clientes * sizeof(Cliente));
 
   limpar_tela_terminal();
   printf("--- Cadastro de Novo Cliente ---\n\n");
 
-  ler_entrada_usuario(novo_cliente->nome_completo, TAMANHO_STRING_PADRAO, "Nome Completo: ");
-
-  ler_e_validar_entrada(novo_cliente->cpf, 20, "CPF (000.000.000-00): ", "Formato invalido!", validar_formato_cpf);
-
-  ler_e_validar_entrada(novo_cliente->telefone, 20, "Telefone (00) 00000-0000: ", "Formato invalido!", validar_formato_telefone);
+  ler_entrada_usuario(lista_clientes[total_clientes].nome_completo, TAMANHO_STRING_PADRAO, "Nome Completo: ");
+  
+  char cpf_nao_formatado[12];
+  ler_e_validar_entrada(cpf_nao_formatado, lista_clientes[total_clientes].cpf, 12, "CPF (Apenas numeros): ", "Formato invalido!\nDigite apenas numeros.\n", validar_e_formatar_cpf);
+  
+  char telefone_nao_formatado[12];
+  ler_e_validar_entrada(telefone_nao_formatado, lista_clientes[total_clientes].telefone, 12, "Telefone (Apenas numeros): ", "Formato invalido!\n", valida_e_formatar_telefone);
 
   ler_e_validar_entrada(novo_cliente->email, TAMANHO_STRING_PADRAO, "E-mail: ", "E-mail invalido!", validar_presenca_arroba);
 
@@ -227,7 +286,7 @@ void gerenciar_clientes(int tipo_operacao) {
       if (opcao_submenu == 1) {
         ler_entrada_usuario(cliente_alvo->nome_completo, TAMANHO_STRING_PADRAO, "Novo Nome: ");
       } else if (opcao_submenu == 2) {
-        ler_e_validar_entrada(cliente_alvo->cpf, 20, "Novo CPF: ", "Invalido!", validar_formato_cpf);
+        ler_e_validar_entrada(cliente_alvo->cpf, 20, "Novo CPF: ", "Invalido!", validar_e_formatar_cpf);
       } else if (opcao_submenu == 3) {
         ler_e_validar_entrada(cliente_alvo->telefone, 20, "Novo Telefone: ", "Invalido!", validar_formato_telefone);
       } else if (opcao_submenu == 4) {
@@ -360,7 +419,7 @@ int menu_principal(){
 
 int exibir_submenu_e_obter_escolha(const char *titulo_submenu) {
   limpar_tela_terminal();
-  int escolha_usuario;
+  int escolha_do_usuario;
 
   printf("=== %s ===\n\n", titulo_submenu);
   printf("1. Gerenciar Clientes\n");
@@ -368,9 +427,9 @@ int exibir_submenu_e_obter_escolha(const char *titulo_submenu) {
   printf("3. Voltar ao Menu Principal\n\n");
   printf("Digite sua opcao: ");
 
-  scanf("%d", &escolha_usuario);
+  scanf("%d", &escolha_do_usuario);
   getchar(); // Consumir quebra de linha
-  return escolha_usuario;
+  return escolha_do_usuario;
 }
 
 int main() {
@@ -410,7 +469,7 @@ int main() {
   
     if (escolha == 1) {
       if (tipo_operacao == 0){
-        realizar_cadastro_cliente();
+        realizar_cadastro_cliente(total_clientes_cadastrados, lista_de_clientes);
       }else{
         gerenciar_clientes(tipo_operacao);
       }
