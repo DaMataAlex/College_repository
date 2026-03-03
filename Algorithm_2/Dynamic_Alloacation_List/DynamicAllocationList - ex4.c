@@ -51,7 +51,7 @@ int main(){
     vetor_usuario = malloc(tamanho_vetor * sizeof(int));
     if(vetor_usuario == NULL){
         printf("Erro de alocacao de memoria\n");
-        return 1;
+        exit(1);
     }
 
     fazer_vetor(vetor_usuario, &tamanho_vetor);
