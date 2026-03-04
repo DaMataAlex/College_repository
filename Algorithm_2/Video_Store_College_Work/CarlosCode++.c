@@ -175,16 +175,17 @@ int buscar_indice_plataforma_por_nome(const char *nome_buscado) {
 
 // --- Funções de Cadastro ---
 
-void realizar_cadastro_cliente(int total_clientes, Cliente *lista_clientes) {
-  lista_clientes = (Cliente*) realloc(lista_clientes, total_clientes * sizeof(Cliente));
+void realizar_cadastro_cliente(int *total_clientes, Cliente *lista_clientes) {
+  (*total_clientes)++;
+  lista_clientes = realloc(lista_clientes, (*total_clientes) * sizeof(Cliente));
 
   limpar_tela_terminal();
   printf("--- Cadastro de Novo Cliente ---\n\n");
 
-  ler_entrada_usuario(lista_clientes[total_clientes].nome_completo, TAMANHO_STRING_PADRAO, "Nome Completo: ");
+  ler_entrada_usuario(lista_clientes[*total_clientes].nome_completo, TAMANHO_STRING_PADRAO, "Nome Completo: ");
   
   char cpf_nao_formatado[12];
-  ler_e_validar_entrada(cpf_nao_formatado, lista_clientes[total_clientes].cpf, 12, "CPF (Apenas numeros): ", "Formato invalido!\nDigite apenas numeros.\n", validar_e_formatar_cpf);
+  ler_e_validar_entrada(cpf_nao_formatado, lista_clientes[*total_clientes].cpf, 12, "CPF (Apenas numeros): ", "Formato invalido!\nDigite apenas numeros.\n", validar_e_formatar_cpf);
   
   char telefone_nao_formatado[12];
   ler_e_validar_entrada(telefone_nao_formatado, lista_clientes[total_clientes].telefone, 12, "Telefone (Apenas numeros): ", "Formato invalido!\n", valida_e_formatar_telefone);
@@ -402,7 +403,7 @@ void gerenciar_plataformas(int tipo_operacao) {
 
 int menu_principal(){
     limpar_tela_terminal();
-    printf("SISTEMA DE GESTAO DE ASSINATURAS\n\n");
+    printf("===SISTEMA DE GESTAO DE ASSINATURAS===\n\n");
     printf("1. Realizar Cadastro\n");
     printf("2. Consultar Dados\n");
     printf("3. Alterar Informacoes\n");
@@ -421,7 +422,7 @@ int exibir_submenu_e_obter_escolha(const char *titulo_submenu) {
   limpar_tela_terminal();
   int escolha_do_usuario;
 
-  printf("=== %s ===\n\n", titulo_submenu);
+  printf("== %s ==\n\n", titulo_submenu);
   printf("1. Gerenciar Clientes\n");
   printf("2. Gerenciar Plataformas\n");
   printf("3. Voltar ao Menu Principal\n\n");
@@ -438,6 +439,10 @@ int main() {
   int total_clientes_cadastrados = 0;
   int total_plataformas_cadastradas = 0;
   int total_assinaturas_cadastradas = 0;
+
+  int *ptotal_clientes = &total_clientes_cadastrados;
+  int *ptotal_plataformas = &total_plataformas_cadastradas;
+  int *ptotal_assinaturas = &total_assinaturas_cadastradas;
 
   Cliente lista_de_clientes[total_clientes_cadastrados];
   Plataforma lista_de_plataformas[total_plataformas_cadastradas];
@@ -462,14 +467,12 @@ int main() {
     // --- Navegação ---
 
     char *titulos_menus[] = {"MENU DE CADASTRO", "MENU DE CONSULTA", "MENU DE ALTERACAO", "MENU DE EXCLUSAO"};
-
     int escolha = exibir_submenu_e_obter_escolha(titulos_menus[opcao_menu_principal - 1]);
-
     int tipo_operacao = opcao_menu_principal - 1;
   
     if (escolha == 1) {
       if (tipo_operacao == 0){
-        realizar_cadastro_cliente(total_clientes_cadastrados, lista_de_clientes);
+        realizar_cadastro_cliente(ptotal_clientes, lista_de_clientes);
       }else{
         gerenciar_clientes(tipo_operacao);
       }

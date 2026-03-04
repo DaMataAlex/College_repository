@@ -52,89 +52,48 @@ void LimparBuffer(){
     while((c = getchar()) != '\n' && c != EOF);
 }
 
-void RetomarMenu(USUARIOS *pBancoUsuarios, PLATAFORMAS *pBancoPlataformas, ASSINATURAS *pBancoAssinaturas, int *total_clientes, int *total_plataformas){
-    LimparTerminal();
+//============================
+//   FUNCOES DE VALIDACAO 
+//============================
+void ValidarCpf(char *cpf){
+    //000.000.000-00
+    //usuario vai ficar aqui ate digitar nesse formato
+    while(1){
+        cpf[strcspn(cpf, "\n")] = '\0';
 
-    //retomar menu do cadastro de usuarios
-    if(pBancoPlataformas == NULL && pBancoAssinaturas == NULL && total_plataformas == NULL){
-        if(pBancoUsuarios[*total_clientes].phone[0] == '\0'){
-            printf("-- Cadastro de clientes --\n\n");
-            printf("Digite o nome do cliente: ");
-            printf("%s\n", pBancoUsuarios[*total_clientes].nome);
-            printf("Digite o CPF do cliente: ");
-            printf("%s\n", pBancoUsuarios[*total_clientes].cpf);
-
-        }else if(pBancoUsuarios[*total_clientes].email[0] == '\0'){
-            printf("-- Cadastro de clientes --\n\n");
-            printf("Digite o nome do cliente: ");
-            printf("%s\n", pBancoUsuarios[*total_clientes].nome);
-            printf("Digite o CPF do cliente: ");
-            printf("%s\n", pBancoUsuarios[*total_clientes].cpf);
-            printf("Digite o telefone do usuario: ");
-            printf("%s\n", pBancoUsuarios[*total_clientes].phone);
+        if(strlen(cpf) == 14 && cpf[3] == '.' && cpf[7] == '.' && cpf[11] == '-'){
+            break;
         }
+
+        LimparTerminal();
+        printf("CPF invalido.\n");
+        printf("Digite novamente (000.000.000-00): ");
+        fgets(cpf, 15, stdin);
+        LimparBuffer();
     }
+    LimparTerminal();
 }
 
-//======================================
-//   FUNCOES DE VALIDACAO E FORMATACAO
-//======================================
-char *ValidarEFormatarCpf(char cpf_nao_formatado[13]){
-    //validando cpf
-    //cpf recebido: 00000000000 -> 13 caracteres contando o \0
-    //formato que a gente quer: 000.000.000-00 -> 15 caracteres contando o \0
+void ValidarTelefone(char *telefone){
+    //(00)0000-0000
+    while(1){
+        telefone[strcspn(telefone, "\n")] = '\0';
 
-    while(strlen(cpf_nao_formatado) != 12){
-        LimparTerminal();
-        printf("Por favor, insira um CPF valido!\n");
-        printf("(Somente numeros)\n\n");
-        fgets(cpf_nao_formatado, 13, stdin);
-    }
-
-    char cpf_formatado[15];
-
-    int j = 0;
-    for(int i = 0; i < 14; i++){
-        if(i == 3 || i == 7){
-            cpf_formatado[i] = '.';
-        }else if(i == 11){
-            cpf_formatado[i] = '-';
-        }else{
-            cpf_formatado[i] = cpf_nao_formatado[j];
-            j++;
+        if(strlen(telefone) == 13 && telefone[0] == '(' && telefone[3] == ')' && telefone[8] == '-'){
+            break;
         }
-    }
 
-    cpf_formatado[strcspn(cpf_formatado, "\n")] = '\0';
-
-    LimparTerminal();
-
-    char *pCPF = cpf_formatado;
-    return pCPF;
-}
-
-char *ValidarEFormatarTelefone(char telefone[15]){
-    //validando telefone
-    //formato: (00)90000-0000
-    telefone[strcspn(telefone, "\n")] = '\0';
-    
-    while(telefone[0] != '(' || telefone[3] != ')' || telefone[9] != '-'){
         LimparTerminal();
-        printf("Por favor, insira um telefone valido!\n");
-        printf("(00)90000-0000\n\n");
-        fgets(telefone, 15, stdin);
+        printf("Telefone invalido.\n");
+        printf("Digite novamente (00)0000-0000: ");
+        fgets(telefone, 14, stdin);
+        LimparBuffer();
     }
-    telefone[strcspn(telefone, "\n")] = '\0';
-
     LimparTerminal();
-
-    char *pTelefone = telefone;
-    return pTelefone;
 
 }
 
-char *ValidarEFormatarEmail(char email[MAX_CHAR]){
-    //validando email
+void ValidarEmail(char *email){
     //precisa ter um @
     int arroba = 0;
 
@@ -152,16 +111,13 @@ char *ValidarEFormatarEmail(char email[MAX_CHAR]){
 
         LimparTerminal();
         printf("Por favor, insira um Email valido!\n");
-        fgets(email, 15, stdin);
+        fgets(email, MAX_CHAR, stdin);
         
     }
 
     email[strcspn(email, "\n")] = '\0';
 
     LimparTerminal();
-
-    char *pEmail = email;
-    return pEmail;
 
 }
 
@@ -196,71 +152,63 @@ char *ValidarURL(char URL[MAX_CHAR]){
 }
 
 //--- GERENCIAMENTO DE CLIENTES ---
-void CadastrarNovoCliente(USUARIOS *pBancoUsuarios, int *total_clientes){
+void CadastrarNovoCliente(USUARIOS *BancoUsuarios, int *total_clientes){
 
     //cadastro do nome
     printf("-- Cadastro de clientes --\n\n");
     printf("Digite o nome do cliente: ");
-    fgets(pBancoUsuarios[*total_clientes].nome, MAX_CHAR, stdin);
-    pBancoUsuarios[*total_clientes].nome[strcspn(pBancoUsuarios[*total_clientes].nome, "\n")] = '\0';
+    fgets(BancoUsuarios[*total_clientes].nome, MAX_CHAR, stdin);
+    BancoUsuarios[*total_clientes].nome[strcspn(BancoUsuarios[*total_clientes].nome, "\n")] = '\0';
 
-    //cadastro do cpf
-    printf("Digite o CPF do cliente (Somente numeros): ");
-    char CPF_nao_formatado[13];
-    fgets(CPF_nao_formatado, 13, stdin);
-    char *pCPF = ValidarEFormatarCpf(CPF_nao_formatado);
-    strcpy(pBancoUsuarios[*total_clientes].cpf, pCPF);
-    RetomarMenu(pBancoUsuarios, NULL, NULL, total_clientes, NULL);
+    //cadastro do cpfcpf
+    printf("Digite o CPF do cliente (000.000.000-00): ");
+    fgets(BancoUsuarios[*total_clientes].cpf, 15, stdin);
+    ValidarCpf(BancoUsuarios[*total_clientes].cpf);
 
     //cadastro do telefone
-    printf("Digite o telefone do usuario (00)90000-0000: ");
-    fgets(pBancoUsuarios[*total_clientes].phone, 15, stdin);
-    char *pTelefoneFormatado = ValidarEFormatarTelefone(pBancoUsuarios[*total_clientes].phone);
-    strcpy(pBancoUsuarios[*total_clientes].phone, pTelefoneFormatado);
-    RetomarMenu(pBancoUsuarios, NULL, NULL, total_clientes, NULL);
-    LimparBuffer();
+    printf("Digite o telefone do usuario (00)0000-0000: ");
+    fgets(BancoUsuarios[*total_clientes].phone, 14, stdin);
+    ValidarTelefone(BancoUsuarios[*total_clientes].phone);
 
     //cadastro email
     printf("Digite o Email do usuario: ");
-    fgets(pBancoUsuarios[*total_clientes].email, MAX_CHAR, stdin);
-    char *pEmailFormatado = ValidarEFormatarEmail(pBancoUsuarios[*total_clientes].email);
-    strcpy(pBancoUsuarios[*total_clientes].email, pEmailFormatado);
-    RetomarMenu(pBancoUsuarios, NULL, NULL, total_clientes, NULL);
+    fgets(BancoUsuarios[*total_clientes].email, MAX_CHAR, stdin);
+    ValidarEmail(BancoUsuarios[*total_clientes].email);
 
     //cadastrando o id do usuario
-    pBancoUsuarios[*total_clientes].id_usuario = 1000 + *total_clientes;
+    BancoUsuarios[*total_clientes].id_usuario = 1000 + *total_clientes;
 
     //mensagem de cadastro concluido
     LimparTerminal();
     printf("Usuario cadastrado com sucesso!\n");
-    printf("Id do usuario: %ld\n\n", pBancoUsuarios[*total_clientes].id_usuario);
+    printf("Id do usuario: %ld\n\n", BancoUsuarios[*total_clientes].id_usuario);
     getchar();
     LimparTerminal();
 }
 
-void BuscarCliente(USUARIOS *pBancoUsuarios, int *total_clientes){
+void BuscarCliente(USUARIOS *BancoUsuarios, int *total_clientes){
     LimparTerminal();
 
     printf("Digite o CPF do cliente que deseja buscar: ");
     char CPF[15];
     char *pCPF = CPF;
     fgets(CPF, 15, stdin);
-    pCPF = ValidarEFormatarCpf(pCPF);
+    ValidarCpf(pCPF);
 
     int encontrado = 0;
 
 
 
     for(int i = 0; i < *total_clientes; i++){
-        if(strcmp(pCPF, pBancoUsuarios[i].cpf) == 0){
+        if(strcmp(pCPF, BancoUsuarios[i].cpf) == 0){
             LimparTerminal();
             encontrado = 1;
             printf("Usuario encontrado!\n\n");
-            printf("%s\n", pBancoUsuarios[i].nome);
-            printf("%s\n", pBancoUsuarios[i].cpf);
-            printf("%ld\n", pBancoUsuarios[i].id_usuario);
-            printf("%s\n", pBancoUsuarios[i].phone);
-            printf("%s\n", pBancoUsuarios[i].email);
+            printf("%s\n", BancoUsuarios[i].nome);
+            printf("%s\n", BancoUsuarios[i].cpf);
+            printf("%ld\n", BancoUsuarios[i].id_usuario);
+            printf("%s\n", BancoUsuarios[i].phone);
+            printf("%s\n", BancoUsuarios[i].email);
             getchar();
             LimparTerminal();
 
@@ -382,23 +330,85 @@ int GerenciamentoDePlataformas(){
     
 }
 
+//===========================================
+//    FUNCOES DE GERENCIAMENTO DE ARQUIVOS  
+//===========================================
+int procurar_arquivo(USUARIOS **BancoUsuarios, int *total_clientes, PLATAFORMAS **BancoPlataformas, int *total_plataformas, ASSINATURAS **BancoAssinaturas, int *total_assinaturas){
+    
+    FILE *fArquivoBin = fopen("BancoDeDados.bin", "rb");
+    int opcao_arquivo = 0;
+
+    if(fArquivoBin == NULL){
+        printf("Nao foi possivel localizar/abrir um arquivo existente nesse computador.\n");
+        printf("Um novo sera criado.\n");
+        printf("Pressione ENTER para continuar.\n\n");
+        getchar();
+        LimparTerminal();
+
+        return 0;// retornando 0 pq deu errado
+    }else{
+
+        while(opcao_arquivo < 1 || opcao_arquivo > 2){
+            printf("Foi localizado um arquivo existente nesse computador, deseja utiliza-lo?\n\n");
+            printf("1 - Sim, irei utilizar o arquivo.\n");
+            printf("2 - Nao, irei sobrescrever o arquivo.\n\n");
+            printf("Escolha uma opcao: ");
+            scanf("%d", &opcao_arquivo);
+            getchar();
+            LimparTerminal();
+        }
+    }
+
+    if(opcao_arquivo == 2){
+        fclose(fArquivoBin);
+        return 0; //return 0 se nao abriu o arquivo 
+    }
+
+    //lendo os clientes que estao no arquivo
+    fread(total_clientes, sizeof(int), 1, fArquivoBin);
+
+    if(*total_clientes > 0){
+        *BancoUsuarios = (USUARIOS*) malloc(*total_clientes * sizeof(USUARIOS));
+        fread(*BancoUsuarios, sizeof(USUARIOS), *total_clientes, fArquivoBin);
+    }
+
+    //lendo as plataformas que estao no arquivo
+    fread(total_plataformas, sizeof(int), 1, fArquivoBin);
+
+    if(*total_plataformas > 0){
+        *BancoPlataformas = (PLATAFORMAS*) malloc(*total_plataformas * sizeof(PLATAFORMAS));
+        fread(*BancoPlataformas, sizeof(PLATAFORMAS), *total_plataformas, fArquivoBin);
+    }
+
+    //lendo as assinaturas que estao no arquivo
+    fread(total_assinaturas, sizeof(int), 1, fArquivoBin);
+
+    if(*total_assinaturas > 0){
+        *BancoAssinaturas = (ASSINATURAS*) malloc(*total_assinaturas * sizeof(ASSINATURAS));
+        fread(*BancoAssinaturas, sizeof(ASSINATURAS), *total_assinaturas, fArquivoBin);
+    }
+
+    fclose(fArquivoBin);
+    LimparTerminal();
+    printf("Dados carregados com sucesso!\n");
+    printf("Pressione ENTER para continuar.\n\n");
+    getchar();
+
+    return 1;//retornando 1 pq o programa conseguiu abrir e ler o arquivo com sucesso
+}
+
 //funcao principal
 int main(){
 
-    //criando o "banco de dados" dos clientes e alocando, inicialmente a quantidade MAX para esse banco
-    //fazendo o mesmo para as plataformas e assinaturas, sem usar variaveis globais
     int total_clientes = 0;
-    int *pTotalClientes = &total_clientes;
-    USUARIOS *pBancoUsuarios = (USUARIOS*) calloc(MAX, sizeof(USUARIOS));
-
     int total_plataformas = 0;
-    int *pTotalPlataformas = &total_plataformas;
-    PLATAFORMAS *pBancoPlataformas = (PLATAFORMAS*) calloc(MAX, sizeof(PLATAFORMAS));
-
     int total_assinaturas = 0;
-    int *pTotalAssinaturas = &total_assinaturas;
-    ASSINATURAS *pBancoAssinaturas = (ASSINATURAS*) calloc(MAX, sizeof(ASSINATURAS));
 
+    USUARIOS *pBancoUsuarios = NULL;
+    PLATAFORMAS *pBancoPlataformas = NULL;
+    ASSINATURAS *pBancoAssinaturas = NULL;
+
+    procurar_arquivo(&pBancoUsuarios, &total_clientes, &pBancoPlataformas, &total_plataformas,&pBancoAssinaturas, &total_assinaturas);
 
     while(1){
         int opcao = MenuPrincipal(opcao);
@@ -406,17 +416,16 @@ int main(){
         if(opcao == 1){
             opcao = GerenciamentoDeClientes();
             if(opcao == 1){
-                pBancoUsuarios = realloc (pBancoUsuarios, (total_clientes + 1) * sizeof(USUARIOS));
-                CadastrarNovoCliente(pBancoUsuarios, pTotalClientes);
-                total_clientes++;
+                pBancoUsuarios = realloc (pBancoUsuarios, (total_clientes++) * sizeof(USUARIOS));
+                CadastrarNovoCliente(pBancoUsuarios, &total_clientes);
             }else if(opcao == 2){
-                BuscarCliente(pBancoUsuarios, pTotalClientes);
+                BuscarCliente(pBancoUsuarios, &total_clientes);
             }
         }else if(opcao == 2){
             opcao = GerenciamentoDePlataformas();
             if(opcao == 1){
                 pBancoPlataformas = realloc (pBancoPlataformas, (total_plataformas + 1) * sizeof(PLATAFORMAS));
-                CadastrarNovaPlataforma(pBancoPlataformas, pTotalPlataformas);
+                CadastrarNovaPlataforma(pBancoPlataformas, &total_plataformas);
                 total_plataformas++;
             }else if(opcao == 2){
                 exit(0);

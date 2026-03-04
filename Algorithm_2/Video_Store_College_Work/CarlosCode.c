@@ -269,9 +269,9 @@ void gerenciar_clientes(int tipo_operacao) {
   }
 }
 
-// ==========================================================
+// =========================================================
 // MÓDULO ESPECÍFICO: GERENCIAMENTO DE PLATAFORMAS
-// ==========================================================
+// =========================================================
 
 void gerenciar_plataformas(int tipo_operacao) {
   char termo_busca[TAMANHO_STRING_PADRAO];
