@@ -14,7 +14,7 @@ typedef struct {
   long int id_usuario;
   char phone[15];
   char email[MAX];
-    
+
 }USUARIOS;
 
 typedef struct {
@@ -53,7 +53,7 @@ void LimparBuffer(){
 }
 
 //============================
-//   FUNCOES DE VALIDACAO 
+//   FUNCOES DE VALIDACAO
 //============================
 //essa funcao de validar cpf ta dando problema quando eu digito mais que 16 digitos
 void ValidarCpf(char *cpf){
@@ -108,7 +108,7 @@ void ValidarEmail(char *email){
         LimparTerminal();
         printf("Por favor, insira um Email valido!\n");
         fgets(email, MAX_CHAR, stdin);
-        
+
     }
 
     email[strcspn(email, "\n")] = '\0';
@@ -118,7 +118,7 @@ void ValidarEmail(char *email){
 }
 
 void ValidarURL(char URL[MAX_CHAR]){
-    
+
     int tem_ponto = 0;
     for(int i = 0; URL[i] != '\n'; i++){
         if(URL[i] == '.'){
@@ -126,7 +126,7 @@ void ValidarURL(char URL[MAX_CHAR]){
             break;
         }
     }
-    
+
     while(tem_ponto == 0){
         LimparTerminal();
         printf("Digite um site valido:\n");
@@ -138,13 +138,15 @@ void ValidarURL(char URL[MAX_CHAR]){
             }
         }
     }
-    
+
     URL[strcspn(URL,"\n")] = '\0';
 
     LimparTerminal();
 }
 
-//--- GERENCIAMENTO DE CLIENTES ---
+//===================================
+//    GERENCIAMENTO DE CLIENTES
+//===================================
 void CadastrarNovoCliente(USUARIOS *BancoUsuarios, int *total_clientes){
 
     //cadastro do nome
@@ -215,10 +217,70 @@ void BuscarCliente(USUARIOS *BancoUsuarios, int *total_clientes){
         getchar();
         LimparTerminal();
     }
-    
+
 }
 
-//--- GERENCIAMENTO DE PLATAFORMAS ---
+void AlterarDadosClientes (USUARIOS *BancoUsuarios, int *total_clientes){
+
+    printf("Digite o CPF do cliente o qual os dados serao alterados: ");
+    char CPF[16];
+    fgets(CPF, 16, stdin);
+    ValidarCpf(CPF);
+
+    int encontrado = 0;
+    int opcao_alteracao = 0;
+    int localizador;
+
+    for(localizador = 0; localizador < *total_clientes; localizador++){
+        if(strcmp(CPF, BancoUsuarios[localizador].cpf) == 0){
+            LimparTerminal();
+            encontrado = 1;
+            printf("Usuario encontrado!\n");
+            printf("Qual dado do usuario sera alterado?\n\n");
+            printf("1 - Nome: %s\n", BancoUsuarios[localizador].nome);
+            printf("2 - CPF: %s\n", BancoUsuarios[localizador].cpf);
+            printf("3 - Telefone: %s\n", BancoUsuarios[localizador].phone);
+            printf("4 - Email: %s\n\n", BancoUsuarios[localizador].email);
+            printf("Escolha uma opcao: ");
+            scanf("%d", &opcao_alteracao);
+            getchar();
+
+            while(opcao_alteracao < 1 && opcao_alteracao > 4){
+                LimparTerminal();
+                printf("Digite uma opcao valida!\n");
+                AlterarDadosClientes(BancoUsuarios, total_clientes);
+            }
+        }
+    }
+
+
+    if(encontrado == 0){
+        LimparTerminal();
+        printf("Usuario nao encontrado!\n");
+        printf("Pressione ENTER para retornar.\n\n");
+        getchar();
+        LimparTerminal();
+        return;
+    }
+    
+    if(opcao_alteracao == 1){
+        LimparTerminal();
+        
+        printf("Digite o novo nome do usuario:\n");
+        fgets(BancoUsuarios[localizador].nome, MAX_CHAR, stdin);
+        
+        LimparTerminal();
+        printf("Nome do usuario alterado!\n\n");
+        printf("Pressione ENTER para retornar.\n");
+        getchar();
+    }
+
+
+}
+
+//===================================
+//    GERENCIAMENTO DE PLATAFORMAS
+//===================================
 void CadastrarNovaPlataforma(PLATAFORMAS *pBancoPlataformas, int *total_plataformas){
 
     //cadastro do nome
@@ -263,6 +325,7 @@ int MenuPrincipal(int opcao){
     printf("2 - Gerenciamento de plataformas.\n");
     printf("3 - Gerenciamento de assinaturas.\n");
     printf("4 - Sair.\n\n");
+    printf("Escolha uma opcao: ");
 
     scanf("%d", &opcao);
     getchar();//consumindo a quebra de linha
@@ -284,6 +347,7 @@ int GerenciamentoDeClientes(){
     printf("3 - Alterar dados de um cliente.\n");
     printf("4 - Excluir um cliente.\n");
     printf("5 - Voltar.\n\n");
+    printf("Escolha uma opcao: ");
 
     int opcao;
     scanf("%d", &opcao);
@@ -294,11 +358,11 @@ int GerenciamentoDeClientes(){
         printf("Escolha uma opcao valida!\n");
         return GerenciamentoDeClientes();
     }
-    
+
     LimparTerminal();
 
     return opcao;
-    
+
 }
 
 int GerenciamentoDePlataformas(){
@@ -308,6 +372,7 @@ int GerenciamentoDePlataformas(){
     printf("3 - Alterar dados de uma plataforma.\n");
     printf("4 - Excluir uma plataforma.\n");
     printf("5 - Voltar.\n\n");
+    printf("Escolha uma opcao: ");
 
     int opcao;
     scanf("%d", &opcao);
@@ -318,18 +383,18 @@ int GerenciamentoDePlataformas(){
         printf("Escolha uma opcao valida!\n");
         return GerenciamentoDePlataformas();
     }
-    
+
     LimparTerminal();
 
     return opcao;
-    
+
 }
 
 //===========================================
-//    FUNCOES DE GERENCIAMENTO DE ARQUIVOS  
+//    FUNCOES DE GERENCIAMENTO DE ARQUIVOS
 //===========================================
 int procurar_arquivo(USUARIOS **BancoUsuarios, int *total_clientes, PLATAFORMAS **BancoPlataformas, int *total_plataformas, ASSINATURAS **BancoAssinaturas, int *total_assinaturas){
-    
+
     FILE *fArquivoBin = fopen("BancoDeDados.bin", "rb");
     int opcao_arquivo = 0;
 
@@ -356,7 +421,7 @@ int procurar_arquivo(USUARIOS **BancoUsuarios, int *total_clientes, PLATAFORMAS 
 
     if(opcao_arquivo == 2){
         fclose(fArquivoBin);
-        return 0; //return 0 se nao abriu o arquivo 
+        return 0; //return 0 se nao abriu o arquivo
     }
 
     //lendo os clientes que estao no arquivo
@@ -416,6 +481,9 @@ int main(){
                 total_clientes++;
             }else if(opcao == 2){
                 BuscarCliente(pBancoUsuarios, &total_clientes);
+            }else if(opcao == 3){
+                LimparTerminal();
+                AlterarDadosClientes(pBancoUsuarios, &total_clientes);
             }
         }else if(opcao == 2){
             opcao = GerenciamentoDePlataformas();
