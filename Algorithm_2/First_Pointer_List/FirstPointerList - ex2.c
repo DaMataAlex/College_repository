@@ -6,6 +6,8 @@ a modificacao.*/
 #include <stdio.h>
 #include <stdlib.h>
 
+//teste
+
 void clear() {
 #ifdef _WIN32
     system("cls");
