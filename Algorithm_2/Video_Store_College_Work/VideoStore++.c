@@ -97,6 +97,7 @@ void ValidarEmail(char *email){
     int arroba = 0;
 
     while(1){
+        email[strcspn(email, "\n")] = '\0';
         for(int i = 0 ; i < strlen(email); i++){
             if(email[i] == '@'){
                 arroba = 1;
@@ -111,13 +112,11 @@ void ValidarEmail(char *email){
 
     }
 
-    email[strcspn(email, "\n")] = '\0';
-
     LimparTerminal();
 
 }
 
-void ValidarURL(char URL[MAX_CHAR]){
+void ValidarURL(char *URL){
 
     int tem_ponto = 0;
     for(int i = 0; URL[i] != '\n'; i++){
@@ -220,8 +219,7 @@ void BuscarCliente(USUARIOS *BancoUsuarios, int *total_clientes){
 
 }
 
-void AlterarDadosClientes (USUARIOS *BancoUsuarios, int *total_clientes){
-
+void AlterarDadosClientes(USUARIOS *BancoUsuarios, int *total_clientes){
     printf("Digite o CPF do cliente o qual os dados serao alterados: ");
     char CPF[16];
     fgets(CPF, 16, stdin);
@@ -236,81 +234,176 @@ void AlterarDadosClientes (USUARIOS *BancoUsuarios, int *total_clientes){
             LimparTerminal();
             encontrado = 1;
             printf("Usuario encontrado!\n");
-            printf("Qual dado do usuario sera alterado?\n\n");
-            printf("1 - Nome: %s\n", BancoUsuarios[localizador].nome);
-            printf("2 - CPF: %s\n", BancoUsuarios[localizador].cpf);
-            printf("3 - Telefone: %s\n", BancoUsuarios[localizador].phone);
-            printf("4 - Email: %s\n\n", BancoUsuarios[localizador].email);
-            printf("Escolha uma opcao: ");
-            scanf("%d", &opcao_alteracao);
+
+            do{
+                printf("Qual dado do usuario sera alterado?\n\n");
+                printf("1 - Nome: %s\n", BancoUsuarios[localizador].nome);
+                printf("2 - CPF: %s\n", BancoUsuarios[localizador].cpf);
+                printf("3 - Telefone: %s\n", BancoUsuarios[localizador].phone);
+                printf("4 - Email: %s\n", BancoUsuarios[localizador].email);
+                printf("5 - Retornar.\n\n");
+                printf("Escolha uma opcao: ");
+
+                scanf("%d", &opcao_alteracao);
+                getchar();
+
+                LimparTerminal();
+            }while(opcao_alteracao < 1 || opcao_alteracao > 5);
+
+            if(opcao_alteracao == 1){
+                LimparTerminal();
+                char novo_nome[MAX_CHAR];
+
+                printf("Digite o novo nome do usuario:\n");
+                fgets(novo_nome, MAX_CHAR, stdin);
+                novo_nome[strcspn(novo_nome, "\n")] = '\0';  // Remover '\n'
+
+                if(strlen(novo_nome) > 0){
+                    strcpy(BancoUsuarios[localizador].nome, novo_nome);
+                    LimparTerminal();
+                    printf("Nome do usuario alterado!\n\n");
+                } else {
+                    LimparTerminal();
+                    printf("Nome nao pode ser vazio.\n\n");
+                }
+            }else if(opcao_alteracao == 2){
+                LimparTerminal();
+
+                printf("Digite o novo CPF do usuario (000.000.000-00): ");
+                fgets(BancoUsuarios[localizador].cpf, 16, stdin);
+                ValidarCpf(BancoUsuarios[localizador].cpf);
+
+                LimparTerminal();
+                printf("CPF do usuario alterado!\n\n");
+
+            }else if(opcao_alteracao == 3){
+                LimparTerminal();
+                printf("Digite o novo telefone do usuario (00)0000-0000: ");
+                fgets(BancoUsuarios[localizador].phone, 15, stdin);
+                ValidarTelefone(BancoUsuarios[localizador].phone);
+
+                LimparTerminal();
+                printf("Telefone do usuario alterado!\n\n");
+
+            }else if(opcao_alteracao == 4){
+                LimparTerminal();
+                printf("Digite o novo email do usuario: ");
+                fgets(BancoUsuarios[localizador].email, MAX_CHAR, stdin);
+                ValidarEmail(BancoUsuarios[localizador].email);
+
+                LimparTerminal();
+                printf("Email do usuario alterado!\n\n");
+            }else{
+                LimparTerminal();
+                return;
+            }
+
+            printf("Pressione ENTER para retornar.\n");
             getchar();
 
-            while(opcao_alteracao < 1 && opcao_alteracao > 4){
-                LimparTerminal();
-                printf("Digite uma opcao valida!\n");
-                AlterarDadosClientes(BancoUsuarios, total_clientes);
-            }
+            LimparTerminal();
+            return;
         }
     }
-
 
     if(encontrado == 0){
         LimparTerminal();
         printf("Usuario nao encontrado!\n");
         printf("Pressione ENTER para retornar.\n\n");
+
         getchar();
         LimparTerminal();
-        return;
-    }
-    
-    if(opcao_alteracao == 1){
-        LimparTerminal();
-        
-        printf("Digite o novo nome do usuario:\n");
-        fgets(BancoUsuarios[localizador].nome, MAX_CHAR, stdin);
-        
-        LimparTerminal();
-        printf("Nome do usuario alterado!\n\n");
-        printf("Pressione ENTER para retornar.\n");
-        getchar();
-    }
 
-
+    }
 }
 
+void ExcluirCliente(USUARIOS *BancoUsuarios, int *total_clientes){
+    char CPF[16];
+    int localizador;
+    int encontrado = 0;
+    int confirmacao;
+
+    printf("Digite o CPF do cliente que sera excluido: ");
+    fgets(CPF, 16, stdin);
+    ValidarCpf(CPF);
+
+    for(localizador = 0; localizador < *total_clientes; localizador++){
+        if(strcmp(CPF, BancoUsuarios[localizador].cpf) == 0){
+            LimparTerminal();
+            encontrado = 1;
+            printf("Usuario encontrado!\n");
+
+            do{
+                printf("Nome: %s\n", BancoUsuarios[localizador].nome);
+                printf("CPF: %s\n", BancoUsuarios[localizador].cpf);
+                printf("Telefone: %s\n", BancoUsuarios[localizador].phone);
+                printf("Email: %s\n\n", BancoUsuarios[localizador].email);
+                printf("Confirma a exclusao?\n");
+                printf("1 - Sim\n");
+                printf("2 - Nao\n\n");
+
+                scanf("%d", &confirmacao);
+                getchar();
+
+                LimparTerminal();
+            }while(confirmacao < 1 || confirmacao > 2);
+        }
+
+        if(confirmacao == 2){
+            LimparTerminal();
+            printf("Operacao cancelada!\n");
+            printf("Pressione ENTER para continuar.\n\n");
+
+            getchar();
+
+            LimparTerminal();
+            return;
+
+        }else{
+            LimparTerminal();
+            return;
+        }
+    }
+
+    if(encontrado == 0){
+        LimparTerminal();
+        printf("Usuario nao encontrado!\n");
+        printf("Pressione ENTER para retornar.\n\n");
+
+        LimparBuffer();
+        getchar();
+        LimparTerminal();
+
+    }
+
+}
 //===================================
 //    GERENCIAMENTO DE PLATAFORMAS
 //===================================
 void CadastrarNovaPlataforma(PLATAFORMAS *pBancoPlataformas, int *total_plataformas){
 
-    //cadastro do nome
     printf("-- Cadastro de plataformas --\n\n");
     printf("Digite o nome da plataforma: ");
     fgets(pBancoPlataformas[*total_plataformas].nome_plataforma, MAX_CHAR, stdin);
     pBancoPlataformas[*total_plataformas].nome_plataforma[strcspn(pBancoPlataformas[*total_plataformas].nome_plataforma, "\n")] = '\0';
     LimparTerminal();
 
-    //cadastrando a categoria
     printf("Digite a categoria da plataforma(filmes, musica, etc): ");
     fgets(pBancoPlataformas[*total_plataformas].categoria, MAX_CHAR, stdin);
     pBancoPlataformas[*total_plataformas].categoria[strcspn(pBancoPlataformas[*total_plataformas].categoria, "\n")] = '\0';
     LimparTerminal();
 
-    //cadastrando o valor
     printf("Digite o valor do servico: R$");
     scanf("%f", &pBancoPlataformas[*total_plataformas].preco);
     LimparBuffer();
     LimparTerminal();
 
-    //cadastrando o site
     printf("Digite o site da plataforma: ");
     fgets(pBancoPlataformas[*total_plataformas].site_url, MAX_CHAR, stdin);
     ValidarURL(pBancoPlataformas[*total_plataformas].site_url);
 
-    //cadastrando o id da plataforma
     pBancoPlataformas[*total_plataformas].id_plataforma = 5000 + *total_plataformas;
 
-    //mensagem de cadastro concluido
     LimparTerminal();
     printf("Plataforma cadastrada com sucesso!\n");
     printf("Id da plataforma: %ld\n\n", pBancoPlataformas[*total_plataformas].id_plataforma);
@@ -484,6 +577,9 @@ int main(){
             }else if(opcao == 3){
                 LimparTerminal();
                 AlterarDadosClientes(pBancoUsuarios, &total_clientes);
+            }else{
+                LimparTerminal();
+                ExcluirCliente(pBancoUsuarios, &total_clientes);
             }
         }else if(opcao == 2){
             opcao = GerenciamentoDePlataformas();
