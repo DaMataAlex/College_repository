@@ -347,9 +347,8 @@ void ExcluirCliente(USUARIOS *BancoUsuarios, int *total_clientes){
 
                 LimparTerminal();
             }while(confirmacao < 1 || confirmacao > 2);
-        }
 
-        if(confirmacao == 2){
+            if(confirmacao == 2){
             LimparTerminal();
             printf("Operacao cancelada!\n");
             printf("Pressione ENTER para continuar.\n\n");
@@ -359,10 +358,24 @@ void ExcluirCliente(USUARIOS *BancoUsuarios, int *total_clientes){
             LimparTerminal();
             return;
 
-        }else{
-            LimparTerminal();
-            return;
+            }else{
+                for(int i=localizador; i < *total_clientes - 1; i++){ //O localizador tem a posicao do usuario a ser excluido, entao todos os usuarios que estao na frente dele (na direita), serao jogados uma casa a esquerda
+                    BancoUsuarios[i] = BancoUsuarios[i + 1];
+                }
+
+                (*total_clientes)--; //Diminui uma unidade de cliente cadastrado na vari�vel l� na main
+
+                LimparTerminal();
+                printf("Cliente excluido com sucesso!\n");
+                printf("Pressione ENTER para retornar.\n\n");
+                getchar();
+                LimparTerminal();
+                return;
+            }
+
         }
+
+
     }
 
     if(encontrado == 0){
@@ -580,6 +593,13 @@ int main(){
             }else{
                 LimparTerminal();
                 ExcluirCliente(pBancoUsuarios, &total_clientes);
+                if(total_clientes > 0){
+                    pBancoUsuarios = realloc(pBancoUsuarios, total_clientes * sizeof(USUARIOS));
+
+                }else if(total_clientes == 0 && pBancoUsuarios == NULL){
+                    free(pBancoUsuarios);
+                    pBancoAssinaturas == NULL; //Devo deixar o ponteiro como nulo, para quando houver o cadastro do primeiro cliente, o realloc nao da problema
+                }
             }
         }else if(opcao == 2){
             opcao = GerenciamentoDePlataformas();
