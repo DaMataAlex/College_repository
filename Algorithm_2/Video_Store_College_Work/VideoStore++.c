@@ -551,7 +551,7 @@ void AlterarDadosPlataformas(PLATAFORMAS *BancoPlataformas, int *total_plataform
 //===================================
 void CadastrarNovaAssinatura(USUARIOS *BancoUsuarios, PLATAFORMAS *BancoPlataformas, ASSINATURAS *BancoAssinaturas, int *total_usuarios, int *total_plataformas, int *total_assinaturas){
 
-    printf("-- Cadastro de asinaturas --\n\n");
+    printf("-- Cadastro de assinaturas --\n\n");
     printf("Digite o cpf do cliente que sera vinculado a assinatura (000.000.000-00): ");
     fgets(BancoAssinaturas[*total_assinaturas].usuario_assinante.cpf, 16, stdin);
     ValidarCpf(BancoAssinaturas[*total_assinaturas].usuario_assinante.cpf);
@@ -562,31 +562,39 @@ void CadastrarNovaAssinatura(USUARIOS *BancoUsuarios, PLATAFORMAS *BancoPlatafor
     int localizadorp;
     int confirmacao = 1;
 
+    int encontrado_usuario = 0;
+
     for(localizadorc = 0; localizadorc < *total_usuarios; localizadorc++){
         if(strcmp(BancoAssinaturas[*total_assinaturas].usuario_assinante.cpf, BancoUsuarios[localizadorc].cpf) == 0){
-            LimparTerminal();
+
+            encontrado_usuario = 1;
+
             printf("Usuario encontrado!\n\n");
             printf("Nome: %s\n", BancoUsuarios[localizadorc].nome);
             printf("CPF: %s\n", BancoUsuarios[localizadorc].cpf);
             printf("Id do usuario: %ld\n", BancoUsuarios[localizadorc].id_usuario);
             printf("Telefone: %s\n", BancoUsuarios[localizadorc].phone);
             printf("Email: %s\n\n", BancoUsuarios[localizadorc].email);
-            printf("Deseja vincula-lo a uma plataforma?.\n");
+
+            printf("Deseja vincula-lo a uma plataforma?\n");
             printf("1 - Sim.\n");
             printf("2 - Nao.\n\n");
+
             scanf("%d", &confirmacao);
             getchar();
             LimparTerminal();
 
-        }else{
-            LimparTerminal();
-            printf("Usuario nao encontrado!\n");
-            printf("Cadastre o cliente antes de vincula-lo a uma plataforma!\n\n");
-            printf("Pressione ENTER para retornar.\n\n");
-            getchar();
-            LimparTerminal();
-            return;
+            break;
         }
+    }
+
+    if(!encontrado_usuario){
+        printf("Usuario nao encontrado!\n");
+        printf("Cadastre o cliente antes de vincula-lo a uma plataforma!\n\n");
+        printf("Pressione ENTER para retornar.\n\n");
+        getchar();
+        LimparTerminal();
+        return;
     }
 
     if(confirmacao == 2){
@@ -597,36 +605,45 @@ void CadastrarNovaAssinatura(USUARIOS *BancoUsuarios, PLATAFORMAS *BancoPlatafor
         return;
     }
 
-    printf("-- Cadastro de asinaturas --\n\n");
+    printf("-- Cadastro de assinaturas --\n\n");
     printf("Digite o nome da plataforma que sera vinculada a assinatura: ");
     fgets(BancoAssinaturas[*total_assinaturas].plataforma_contratada.nome_plataforma, MAX_CHAR, stdin);
     BancoAssinaturas[*total_assinaturas].plataforma_contratada.nome_plataforma[strcspn(BancoAssinaturas[*total_assinaturas].plataforma_contratada.nome_plataforma, "\n")] = '\0';
+    LimparTerminal();
+
+    int encontrado_plataforma = 0;
 
     for(localizadorp = 0; localizadorp < *total_plataformas; localizadorp++){
         if(strcmp(BancoAssinaturas[*total_assinaturas].plataforma_contratada.nome_plataforma, BancoPlataformas[localizadorp].nome_plataforma) == 0){
-            LimparTerminal();
+
+            encontrado_plataforma = 1;
+
             printf("Plataforma encontrada!\n\n");
             printf("Nome: %s\n", BancoPlataformas[localizadorp].nome_plataforma);
             printf("Id da plataforma: %ld\n", BancoPlataformas[localizadorp].id_plataforma);
             printf("Categoria: %s\n", BancoPlataformas[localizadorp].categoria);
             printf("Preco: R$%.2f\n", BancoPlataformas[localizadorp].preco);
             printf("URL: %s\n\n", BancoPlataformas[localizadorp].site_url);
+
             printf("Deseja vincula-la a um cliente?\n");
             printf("1 - Sim.\n");
             printf("2 - Nao\n\n");
+
             scanf("%d", &confirmacao);
             getchar();
             LimparTerminal();
 
-        }else{
-            LimparTerminal();
-            printf("Plataforma nao encontrada!\n");
-            printf("Cadastre a plataforma antes de vincula-la a um cliente!\n\n");
-            printf("Pressione ENTER para retornar.\n\n");
-            getchar();
-            LimparTerminal();
-            return;
+            break;
         }
+    }
+
+    if(!encontrado_plataforma){
+        printf("Plataforma nao encontrada!\n");
+        printf("Cadastre a plataforma antes de vincula-la a um cliente!\n\n");
+        printf("Pressione ENTER para retornar.\n\n");
+        getchar();
+        LimparTerminal();
+        return;
     }
 
     if(confirmacao == 2){
@@ -648,10 +665,12 @@ void CadastrarNovaAssinatura(USUARIOS *BancoUsuarios, PLATAFORMAS *BancoPlatafor
     printf("CPF: %s\n", BancoAssinaturas[*total_assinaturas].usuario_assinante.cpf);
     printf("Plataforma Contratada: %s\n", BancoAssinaturas[*total_assinaturas].plataforma_contratada.nome_plataforma);
     printf("Categoria do servico: %s\n\n", BancoAssinaturas[*total_assinaturas].plataforma_contratada.categoria);
+
     printf("Pressione ENTER para continuar.\n\n");
     getchar();
+    LimparTerminal();
 
-    *total_assinaturas++;
+    (*total_assinaturas)++;
 }
 
 //--- MENUS ---
