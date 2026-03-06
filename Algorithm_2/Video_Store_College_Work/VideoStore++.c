@@ -256,53 +256,82 @@ void AlterarDadosClientes(USUARIOS *BancoUsuarios, int *total_clientes){
 
                 printf("Digite o novo nome do usuario:\n");
                 fgets(novo_nome, MAX_CHAR, stdin);
-                novo_nome[strcspn(novo_nome, "\n")] = '\0';  // Remover '\n'
+                novo_nome[strcspn(novo_nome, "\n")] = '\0';
+                LimparTerminal();
 
-                if(strlen(novo_nome) > 0){
-                    strcpy(BancoUsuarios[localizador].nome, novo_nome);
-                    LimparTerminal();
-                    printf("Nome do usuario alterado!\n\n");
-                } else {
-                    LimparTerminal();
-                    printf("Nome nao pode ser vazio.\n\n");
-                }
+                printf("Nome do usuario alterado com sucesso!\n\n");
+
+                printf("Nome anterior: %s\n", BancoUsuarios[localizador].nome);
+                printf("Novo nome: %s\n\n", novo_nome);
+                printf("Pressione ENTER para continuar.\n\n");
+                getchar();
+                LimparTerminal();
+
+                strcpy(BancoUsuarios[localizador].nome, novo_nome);
+
             }else if(opcao_alteracao == 2){
                 LimparTerminal();
+                char novo_cpf[MAX_CHAR];
 
                 printf("Digite o novo CPF do usuario (000.000.000-00): ");
-                fgets(BancoUsuarios[localizador].cpf, 16, stdin);
-                ValidarCpf(BancoUsuarios[localizador].cpf);
-
+                fgets(novo_cpf, 16, stdin);
+                ValidarCpf(novo_cpf);
                 LimparTerminal();
-                printf("CPF do usuario alterado!\n\n");
+
+                printf("CPF do usuario alterado com sucesso!\n\n");
+
+                printf("CPF anterior: %s\n", BancoUsuarios[localizador].cpf);
+                printf("Novo CPF: %s\n\n", novo_cpf);
+                printf("Pressione ENTER para continuar.\n\n");
+                getchar();
+                LimparTerminal();
+
+                strcpy(BancoUsuarios[localizador].cpf, novo_cpf);
 
             }else if(opcao_alteracao == 3){
                 LimparTerminal();
-                printf("Digite o novo telefone do usuario (00)0000-0000: ");
-                fgets(BancoUsuarios[localizador].phone, 15, stdin);
-                ValidarTelefone(BancoUsuarios[localizador].phone);
+                char novo_telefone[MAX_CHAR];
 
+                printf("Digite o novo telefone do usuario (00)0000-0000: ");
+                fgets(novo_telefone, 15, stdin);
+                ValidarTelefone(novo_telefone);
                 LimparTerminal();
-                printf("Telefone do usuario alterado!\n\n");
+
+                printf("Telefone do usuario alterado com sucesso!\n\n");
+
+                printf("Telefone anterior: %s\n", BancoUsuarios[localizador].phone);
+                printf("Novo telefone: %s\n\n", novo_telefone);
+                printf("Pressione ENTER para continuar.\n\n");
+                getchar();
+                LimparTerminal();
+
+                strcpy(BancoUsuarios[localizador].phone, novo_telefone);
 
             }else if(opcao_alteracao == 4){
                 LimparTerminal();
-                printf("Digite o novo email do usuario: ");
-                fgets(BancoUsuarios[localizador].email, MAX_CHAR, stdin);
-                ValidarEmail(BancoUsuarios[localizador].email);
+                char novo_email[MAX_CHAR];
 
+
+                printf("Digite o novo email do usuario: ");
+                fgets(novo_email, MAX_CHAR, stdin);
+                ValidarEmail(novo_email);
                 LimparTerminal();
-                printf("Email do usuario alterado!\n\n");
+
+                printf("Email do usuario alterado com sucesso!\n\n");
+
+                printf("Email anterior: %s\n", BancoUsuarios[localizador].email);
+                printf("Novo email: %s\n\n", novo_email);
+                printf("Pressione ENTER para continuar.\n\n");
+                getchar();
+                LimparTerminal();
+
+                strcpy(BancoUsuarios[localizador].email, novo_email);
+
             }else{
                 LimparTerminal();
                 return;
             }
 
-            printf("Pressione ENTER para retornar.\n");
-            getchar();
-
-            LimparTerminal();
-            return;
         }
     }
 
@@ -438,7 +467,7 @@ void BuscarPlataforma(PLATAFORMAS *BancoPlataformas, int *total_plataformas){
 
     for(int i=0; i < *total_plataformas; i++){
 
-        if(strcmp(nome_busca, BancoPlataformas[i].nome_plataforma) == 0){
+        if(strcasecmp(nome_busca, BancoPlataformas[i].nome_plataforma) == 0){
             LimparTerminal();
             encontrado = 1;
 
@@ -502,47 +531,90 @@ void AlterarDadosPlataformas(PLATAFORMAS *BancoPlataformas, int *total_plataform
                 LimparTerminal();
                 char novo_nome[MAX_CHAR];
 
-                printf("Digite o novo nome da Plataforma:\n");
+                printf("Digite o novo nome da Plataforma: ");
                 fgets(novo_nome, MAX_CHAR, stdin);
                 novo_nome[strcspn(novo_nome, "\n")] = '\0';
+                LimparTerminal();
 
-                printf("Nome do usuario alterado com sucesso!\n\n");
+                printf("Nome da plataforma alterada com sucesso!\n\n");
 
-                printf("Nome anterior: %s\n", BancoPlataformas[*total_plataformas].nome_plataforma);
+                printf("Nome anterior: %s\n", BancoPlataformas[localizador].nome_plataforma);
                 printf("Novo nome: %s\n\n", novo_nome);
                 printf("Pressione ENTER para continuar.\n\n");
                 getchar();
                 LimparTerminal();
 
-                strcpy(BancoPlataformas[*total_plataformas].nome_plataforma, novo_nome);
+                strcpy(BancoPlataformas[localizador].nome_plataforma, novo_nome);
 
             }else if(opcao_alteracao == 2){
                 LimparTerminal();
-                char novo_categoria[MAX_CHAR];
+                char nova_categoria[MAX_CHAR];
 
-                printf("Digite a nova categoria:\n");
-                fgets(novo_categoria, MAX_CHAR, stdin);
-                novo_categoria[strcspn(novo_categoria, "\n")] = '\0';
+                printf("Digite a nova categoria: ");
+                fgets(nova_categoria, MAX_CHAR, stdin);
+                nova_categoria[strcspn(nova_categoria, "\n")] = '\0';
+                LimparTerminal();
 
-                if(strlen(novo_categoria) > 0){
-                    strcpy(BancoPlataformas[localizador].categoria, novo_categoria);
-                    LimparTerminal();
-                    printf("Categoria alterada!\n\n");
-                } else {
-                    LimparTerminal();
-                    printf("Categoria nao pode ser vazio.\n\n");
-                }
+                printf("Categoria alterada com sucesso!\n\n");
+
+                printf("Categoria anterior: %s\n", BancoPlataformas[localizador].categoria);
+                printf("Nova categoria: %s\n\n", nova_categoria);
+                printf("Pressione ENTER para continuar.\n\n");
+                getchar();
+                LimparTerminal();
+
+                strcpy(BancoPlataformas[localizador].categoria, nova_categoria);
 
             }else if(opcao_alteracao == 3){
                 LimparTerminal();
-                printf("Digite o novo valor:\n");
-                scanf("%f", &BancoPlataformas[localizador].preco);
+                float novo_valor;
+
+                printf("Digite o novo valor: ");
+                scanf("%f", novo_valor);
                 getchar();
                 LimparTerminal();
-                printf("Valor alterado com sucesso!");
+
+                printf("Valor alterado com sucesso!\n\n");
+
+                printf("Valor anterior: %.2f\n", BancoPlataformas[localizador].preco);
+                printf("Novo valor: %.2f\n\n", novo_valor);
+                printf("Pressione ENTER para continuar.\n\n");
                 getchar();
+                LimparTerminal();
+
+                BancoPlataformas[localizador].preco = novo_valor;
+
+            }else if(opcao_alteracao == 4){
+                LimparTerminal();
+                char nova_url[MAX_CHAR];
+
+                printf("Digite a nova URL: ");
+                fgets(nova_url, MAX_CHAR, stdin);
+                LimparTerminal();
+
+                printf("URL alterada com sucesso!\n\n");
+
+                printf("URL anterior: %s\n", BancoPlataformas[localizador].site_url);
+                printf("Nova URL: %s\n\n", nova_url);
+                printf("Pressione ENTER para continuar.\n\n");
+                getchar();
+                LimparTerminal();
+
+                strcpy(BancoPlataformas[localizador].site_url, nova_url);
+
+            }else{
+                LimparTerminal();
+                return;
             }
         }
+    }
+    if(encontrado == 0){
+        LimparTerminal();
+        printf("Plataforma nao encontrada!\n");
+        printf("Pressione ENTER para retornar.\n\n");
+
+        getchar();
+        LimparTerminal();
     }
 }
 
