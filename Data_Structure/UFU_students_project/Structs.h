@@ -34,6 +34,7 @@ typedef struct{
     char professor_cadastrado[MAX];
     int carga_horaria;
     char turno;
+    int limites_alunos;
 
 }Disciplina;
 
