@@ -68,11 +68,11 @@ WHERE EXTRACT(YEAR FROM data) = 2021 AND EXTRACT(MONTH FROM data) = 03;
 
 SELECT descricao, preco
 FROM Produto
-WHERE cor = 'azul' OR cor = 'preto';
+WHERE cor = 'Azul' OR cor = 'Preto';
 --ou ainda:
 SELECT descricao, preco
 FROM Produto
-WHERE cor IN ('azul', 'preto');
+WHERE cor IN ('Azul', 'Preto');
 
 SELECT nome
 FROM Cliente
@@ -89,3 +89,17 @@ WHERE data BETWEEN '2020-01-01' AND '2020-12-31';
 SELECT *
 FROM Produto
 WHERE tamanho = 'M' AND preco < 100;
+
+SELECT COUNT(*)
+FROM Produto;
+
+SELECT SUM(quantidade)
+FROM Produto;
+
+SELECT MIN(preco)
+FROM Produto
+WHERE cor = 'Preto';
+
+SELECT COUNT(cod_venda)
+FROM Venda
+WHERE cpf_cliente = '44444444444';
