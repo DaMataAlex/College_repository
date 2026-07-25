@@ -34,7 +34,7 @@ CREATE TABLE ItensVenda(
     FOREIGN KEY (cod_produto) REFERENCES Produto(codigo)
 );
 
---treino de inserts e updates
+-- exercicios de inserts e updates
 INSERT INTO Cliente (cpf, nome, cidade) VALUES
     ('44444444444', 'Diego Alves', 'Uberlandia');
 
@@ -46,5 +46,46 @@ DELETE FROM Cliente
 WHERE cpf = '44444444444';
 
 --recriando o Diego porque eu tinha apagado ele
- INSERT INTO Clientes (cpf, nome, cidade) VALUESS
+ INSERT INTO Cliente (cpf, nome, cidade) VALUES
     ('44444444444', 'Diego Alves', 'Uberlandia');
+
+INSERT INTO Venda (cpf_cliente, data) VALUES
+    ('44444444444', '2021-03-15');
+
+-- exercicios de selects basicos
+SELECT nome, cidade
+FROM Cliente
+WHERE cidade = 'Uberlandia';
+
+SELECT *
+FROM Produto
+WHERE quantidade = 0
+ORDER BY descricao;
+
+SELECT cod_venda
+FROM Venda
+WHERE EXTRACT(YEAR FROM data) = 2021 AND EXTRACT(MONTH FROM data) = 03;
+
+SELECT descricao, preco
+FROM Produto
+WHERE cor = 'azul' OR cor = 'preto';
+--ou ainda:
+SELECT descricao, preco
+FROM Produto
+WHERE cor IN ('azul', 'preto');
+
+SELECT nome
+FROM Cliente
+WHERE cidade != 'Uberlandia';
+
+SELECT *
+FROM ItensVenda
+WHERE qtde_vendida > 5;
+
+SELECT cod_venda, data
+FROM Venda
+WHERE data BETWEEN '2020-01-01' AND '2020-12-31';
+
+SELECT *
+FROM Produto
+WHERE tamanho = 'M' AND preco < 100;
