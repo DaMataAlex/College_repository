@@ -140,3 +140,57 @@ SELECT ItensVenda.cod_produto, Produto.descricao, SUM( ItensVenda.qtde_vendida)
 From ItensVenda
 JOIN Produto ON ItensVenda.cod_produto = Produto.codigo
 GROUP BY ItensVenda.cod_produto, Produto.descricao;
+
+--cliente----->venda--------->itensvenda----------->produto
+--        cpf       cod_venda           cod_produto
+SELECT nome
+FROM Cliente
+WHERE cpf IN(
+    SELECT cpf_cliente
+    FROM Venda
+    WHERE cod_venda IN(
+        SELECT cod_venda
+        FROM ItensVenda
+        WHERE cod_produto IN(
+            SELECT codigo
+            FROM Produto
+            WHERE codigo = 2
+        )
+    )
+);
+
+SELECT nome
+FROM Cliente
+WHERE NOT EXISTS(
+    SELECT 1
+    FROM Venda
+    WHERE Venda.cpf_cliente = Cliente.cpf
+);
+
+--cliente----->venda--------->itensvenda----------->produto
+--        cpf       cod_venda           cod_produto
+SELECT nome
+FROM Cliente
+WHERE NOT EXISTS(
+    SELECT 1
+    FROM Produto
+    WHERE cor = 'azul' AND NOT EXISTS(
+        SELECT 1
+        FROM Venda
+        JOINS ItensVenda ON Venda.cod_venda = ItensVenda.cod_venda,
+        WHERE Venda.cpf_cliente = Clitente.cpf AND ItensVenda.cod_produto = Produto.codigo
+    )
+);
+
+SELECT nome
+FROM Cliente
+WHERE NOT EXISTS(
+    SELECT 1
+    FROM Produto
+    WHERE preco < 50 AND NOT EXISTS(
+        SELECT 1
+        FROM Venda
+        JOINS ItensVenda ON Venda.cod_venda = ItensVenda.cod_venda,
+        WHERE Venda.cpf_cliente = Cliente.cpf AND ItensVenda.cod_produto = Produto.codigo
+    )
+);
