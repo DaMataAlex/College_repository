@@ -178,7 +178,7 @@ WHERE NOT EXISTS(
         SELECT 1
         FROM Venda
         JOINS ItensVenda ON Venda.cod_venda = ItensVenda.cod_venda,
-        WHERE Venda.cpf_cliente = Clitente.cpf AND ItensVenda.cod_produto = Produto.codigo
+        WHERE Venda.cpf_cliente = Cliente.cpf AND ItensVenda.cod_produto = Produto.codigo
     )
 );
 
@@ -194,3 +194,51 @@ WHERE NOT EXISTS(
         WHERE Venda.cpf_cliente = Cliente.cpf AND ItensVenda.cod_produto = Produto.codigo
     )
 );
+
+--cliente----->venda--------->itensvenda----------->produto
+--        cpf       cod_venda           cod_produto
+SELECT nome
+FROM Cliente
+WHERE NOT EXISTS(
+    SELECT 1
+    FROM Produto
+    WHERE preco < 50 AND NOT EXISTS(
+        SELECT 1
+        FROM Venda
+        JOIN ItensVenda ON Venda.cod_venda = ItensVenda.cod_venda
+        WHERE Venda.cpf_cliente = Cliente.cpf AND ItensVenda.cod_produto = Produto.codigo
+    )
+);
+
+SELECT descricao
+FROM Produto
+WHERE NOT EXISTS(
+    SELECT 1
+    FROM Cliente
+    WHERE NOT EXISTS(
+        SELECT 1
+        FROM Venda
+        JOIN ItensVenda on Venda.cod_venda = Cliente.cpf AND ItensVenda.cod_produto = Produto.codigo
+    )
+);
+
+ALTER TABLE Cliente
+ADD COLUMN email VARCHAR(100);
+
+ALTER TABLE Cliente
+RENAME COLUMN email TO email_contato;
+
+ALTER TABLE Cliente
+DROP COLUMN email_contato;
+
+SELECT *
+FROM Produto
+WHERE descricao LIKE '%camisa%';
+
+SELECT nome
+FROM Cliente
+WHERE nome LIKE 'M%';
+
+SELECT *
+FROM Produto
+WHERE cor NOT LIKE '%o';
