@@ -1,4 +1,4 @@
---TABELAS PRINCIPAIS
+-- exercicios de fixacao com DDL
 CREATE TABLE Produto(
     codigo SERIAL,
     descricao VARCHAR(150),
@@ -24,7 +24,6 @@ CREATE TABLE Venda(
     FOREIGN KEY (cpf_cliente) REFERENCES Cliente(cpf)
 );
 
--- TABELAS DE RELACIONAMENTO
 CREATE TABLE ItensVenda(
     cod_venda INT,
     cod_produto INT,
@@ -34,7 +33,7 @@ CREATE TABLE ItensVenda(
     FOREIGN KEY (cod_produto) REFERENCES Produto(codigo)
 );
 
--- exercicios de inserts e updates
+-- exercicios de fixacao com DML
 INSERT INTO Cliente (cpf, nome, cidade) VALUES
     ('44444444444', 'Diego Alves', 'Uberlandia');
 
@@ -45,14 +44,12 @@ WHERE cpf = '44444444444';
 DELETE FROM Cliente
 WHERE cpf = '44444444444';
 
---recriando o Diego porque eu tinha apagado ele
  INSERT INTO Cliente (cpf, nome, cidade) VALUES
     ('44444444444', 'Diego Alves', 'Uberlandia');
 
 INSERT INTO Venda (cpf_cliente, data) VALUES
     ('44444444444', '2021-03-15');
 
--- exercicios de selects basicos
 SELECT nome, cidade
 FROM Cliente
 WHERE cidade = 'Uberlandia';
@@ -103,3 +100,43 @@ WHERE cor = 'Preto';
 SELECT COUNT(cod_venda)
 FROM Venda
 WHERE cpf_cliente = '44444444444';
+
+SELECT cor, COUNT(*)
+FROM Produto
+GROUP BY cor;
+
+SELECT cor, SUM(quantidade)
+FROM Produto
+GROUP BY cor
+HAVING SUM(quantidade) > 50;
+
+SELECT cpf_cliente, COUNT(*)
+FROM Venda
+GROUP BY cpf_cliente;
+
+SELECT cpf_cliente, COUNT(*)
+FROM Venda
+GROUP BY cpf_cliente
+HAVING COUNT(*) >= 3;
+
+SELECT Produto.descricao, Produto.cor, Cliente.nome, Venda.data
+FROM Produto
+JOIN ItensVenda ON Produto.codigo = ItensVenda.cod_produto
+JOIN ItensVenda ON Venda.cod_venda = ItensVenda.cod_venda
+JOIN Cliente ON Venda.cpf_cliente = Cliente.cpf;
+
+--cliente----->venda----------->itensvenda------------>produto
+--        cpf        cod_venda             cod_produto
+SELECT Cliente.nome
+FROM Cliente
+JOIN Venda ON Cliente.cpf = Venda.cpf_cliente
+JOIN ItensVenda ON Venda.cod_venda = ItensVenda.cod_venda
+JOIN Produto ON ItensVenda.cod_produto = Produto.codigo
+WHERE Produto.codigo = 1;
+
+--itensvenda------------>produto
+--           cod_produto
+SELECT ItensVenda.cod_produto, Produto.descricao, SUM( ItensVenda.qtde_vendida)
+From ItensVenda
+JOIN Produto ON ItensVenda.cod_produto = Produto.codigo
+GROUP BY ItensVenda.cod_produto, Produto.descricao;
