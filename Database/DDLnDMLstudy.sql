@@ -242,3 +242,49 @@ WHERE nome LIKE 'M%';
 SELECT *
 FROM Produto
 WHERE cor NOT LIKE '%o';
+
+SELECT Cliente.nome
+FROM Cliente
+JOIN Venda ON Cliente.cpf = Venda.cpf_cliente
+JOIN ItensVenda ON Venda.cod_venda = ItensVenda.cod_venda
+GROUP BY Clientes.nome
+HAVING COUNT (DISTINCT ItensVenda.cod_produto) > 2;
+
+SELECT Cliente.cpf, Cliente.nome
+FROM Cliente
+JOIN Venda on Cliente.cpf = Venda.cpf_cliente
+JOIN ItensVenda ON Venda.cod_venda = ItensVenda.cod_venda
+GROUP BY Cliente.cpf, Cliente.nome
+HAVING COUNT (DISTINCT ItensVenda.cod_produto) > 1;
+
+--cliente----->venda--------->itensvenda----------->produto
+--        cpf       cod_venda           cod_produto
+SELECT Produto.descricao
+FROM Produto
+JOIN ItensVenda ON Produto.codigo = ItensVenda.cod_produto
+JOIN Venda ON ItensVenda.cod_venda = Venda.cod_venda
+JOIN Cliente ON Venda.cpf_cliente = Cliente.cpf
+GROUP BY Produto.descricao
+HAVING COUNT (DISTINCT Cliente.cpf) > 2;
+
+SELECT Cliente.cpf
+FROM Cliente
+JOIN Venda ON Cliente.cpf = Venda.cpf_cliente
+JOIN ItensVenda ON Venda.cod_venda = ItensVenda.cod_venda
+GROUP BY Cliente.cpf
+HAVING SUM(ItensVenda.qtde_vendida) > 5;
+
+SELECT cor, COUNT(*)
+FROM Produto
+GROUP BY cor
+HAVING COUNT(*) >= 3;
+
+SELECT tamanho, COUNT(*)
+FROM Produto
+GROUP BY tamanho
+HAVING COUNT(*) > 1;
+
+SELECT EXTRACT(YEAR FROM data), COUNT (*)
+FROM Venda
+GROUP BY EXTRACT(YEAR FROM data)
+HAVING COUNT(*) >= 2;
