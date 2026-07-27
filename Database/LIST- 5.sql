@@ -186,6 +186,10 @@ WHERE ItensVenda.cod_venda = 1;
 SELECT cod_produto, COUNT(*)
 FROM ItensVenda
 GROUP BY cod_produto;
+--ou ainda
+SELECT Produto.codigo, ItensVenda.qtde_vendida
+FROM Produto
+LEFT JOIN ItensVenda ON Produto.codigo = ItensVenda.cod_produto
 
 
 --13
@@ -363,9 +367,10 @@ GROUP BY Turma.ano, Turma.semestre;
 
 
 --26
-SELECT Inscricao.codTurma, AVG(Inscricao.faltas), AVG(Inscricao.nota)
+SELECT AVG(Inscricao.faltas), AVG(Inscricao.nota)
 FROM Inscricao
-GROUP BY Inscricao.codTurma;
+JOIN Turma ON Inscricao.codTurma = Turma.codigo
+GROUP BY Inscricao.cod, Turma.semestre
 
 
 --27
@@ -382,3 +387,174 @@ WHERE NOT EXISTS(
 
 
 --28
+SELECT DISTINCT Aluno.nome, Aluno.dataEntrada
+From Aluno
+JOIN Inscricao ON Aluno.codigo = Inscricao.codAluno
+JOIN Turma ON Inscricao.codTurma = Turma.codigo
+WHERE Turma.ano = 2019 AND Turma.semestre = 1;
+
+
+--29
+ SELECT Aluno.nome, Aluno.dataEntrada
+ FROM Aluno
+ WHERE NOT EXISTS(
+     SELECT 1
+     FROM Inscricao
+     JOIN Turma ON Inscricao.codTurma = Turma.codigo
+     WHERE Turma.ano = 2018 AND Turma.semestre = 2
+ );
+
+
+ --30
+ SELECT Aluno.nome, Aluno.codigo
+ FROM Aluno
+ WHERE EXISTS(
+     SELECT 1
+     FROM Inscricao
+     JOIN Turma ON Inscricao.codTurma = Turma.codigo
+     WHERE Turma.ano = 2018 AND Turma.semestre = 1
+) AND EXISTS(
+    SELECT 1
+    FROM Inscricao
+    JOIN Turma ON Inscricao.codTurma = Turma.codigo
+    WHERE Turma.ano = 2018 AND Turma.semestre = 2
+ );
+
+
+--31
+SELECT Aluno.nome
+FROM Aluno
+JOIN Inscricao ON Aluno.codigo = Inscricao.codAluno
+JOIN Turma on Inscricao.codTurma = Turma.codigo
+WHERE Turma.ano = 2020
+GROUP BY Aluno.nome, Aluno.codigo
+HAVING COUNT(Inscricao.codAluno) = 6;
+
+--32
+SELECT Aluno.nome, Aluno.codigo
+FROM Aluno
+WHERE EXISTS(
+    SELECT 1
+    FROM Inscricao
+    JOIN Turma ON Inscricao.codTurma = Turma.codigo
+    WHERE Inscricao.codAluno = Aluno.codigo
+    AND Turma.ano = 2020
+    AND Turma.semestre = 1
+) AND NOT EXISTS(
+    SELECT 1
+    FROM Inscricao
+    JOIN Turma ON Inscricao.codTurma = Turma.codigo
+    WHERE Inscricao.codAluno = Aluno.codigo
+    AND Turma.ano = 2019
+    AND Turma.semestre = 2
+);
+
+
+--33
+SELECT Aluno.codigo, Aluno.nome, COUNT(Inscricao.codAluno)
+FROM Aluno
+JOIN Inscricao ON Aluno.codigo = Inscricao.codAluno
+GROUP BY Aluno.codigo, Aluno.nome;
+
+
+--34
+SELECT Disciplina.*, Turma.*
+FROM Disciplina
+LEFT JOIN Turma ON Disciplina.codTurma = Turma.codigo;
+
+
+--C)
+--CRIACAO DO SCRIPT
+CREATE TABLE Peca (
+    PNum INT PRIMARY KEY,
+    PNome VARCHAR(100),
+    Cor VARCHAR(30),
+    Peso DECIMAL(6,2),
+    Cidade VARCHAR(100)
+);
+
+CREATE TABLE Fornecedor (
+    FNum INT PRIMARY KEY,
+    FNome VARCHAR(100),
+    Status INT,
+    Cidade VARCHAR(100)
+);
+
+CREATE TABLE Fornece (
+    FNum INT,
+    PNum INT,
+    Preco DECIMAL(10,2),
+    PRIMARY KEY (FNum, PNum),
+    FOREIGN KEY (FNum) REFERENCES Fornecedor(FNum),
+    FOREIGN KEY (PNum) REFERENCES Peca(PNum)
+);
+
+CREATE TABLE Conta (
+    NomeAgencia VARCHAR(100),
+    NroConta INT PRIMARY KEY,
+    Saldo DECIMAL(12,2)
+);
+
+CREATE TABLE Depositante (
+    NomeCliente VARCHAR(100),
+    NroConta INT,
+    PRIMARY KEY (NomeCliente, NroConta),
+    FOREIGN KEY (NroConta) REFERENCES Conta(NroConta)
+);
+
+CREATE TABLE Devedor (
+    NomeCliente VARCHAR(100),
+    NroEmprestimo INT,
+    PRIMARY KEY (NomeCliente, NroEmprestimo)
+);
+
+CREATE TABLE Dep (
+    DNum INT PRIMARY KEY,
+    DNome VARCHAR(100),
+    Orcam DECIMAL(12,2)
+);
+
+CREATE TABLE Emp (
+    ENum INT PRIMARY KEY,
+    ENome VARCHAR(100),
+    End VARCHAR(200),
+    Tel VARCHAR(20),
+    Sal DECIMAL(10,2),
+    DNum INT,
+    FOREIGN KEY (DNum) REFERENCES Dep(DNum)
+);
+
+
+--35
+SELECT Peca.cor, Peca.cidade
+FROM Peca
+WHERE Peca.cidade != 'Uberlandia';
+
+--36
+SELECT Pecas.*, Fornecedor.*
+FROM Pecas
+JOIN Fornece ON Pecas.PNum = Fornece.PNum
+JOIN Fornecedor ON Fornece.FNum = Fornecedor.FNum
+WHERE Fornecedor.cidade = Pecas.cidade
+
+
+--37
+SELECT Fornecedor.FNum, Fornecedor.FNum
+FROM Fornecedor
+JOIN Fornecedor ON Fornecedor.cidade = Fornecedor.cidade
+WHERE Fornecedor.cidade < Fornecedor.cidade;
+
+
+--38
+SELECT DISTINCT Fornecedor.nome, COUNT(*)
+FROM Fornecedor
+JOIN Peca ON Fornecedor.FNum = Peca.PNum
+JOIN Fornece ON Fornecedor.FNum = Fornece.FNum
+WHERE Peca.COR = 'Vermelha'
+GROUP BY Fornecedor.nome
+HAVING COUNT(Peca.cor) >= 1;
+
+
+--39
+SELECT Fornecedor.nome
+FROM Fornecedor
