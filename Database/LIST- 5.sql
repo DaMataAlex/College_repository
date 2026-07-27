@@ -151,7 +151,7 @@ WHERE Preco BETWEEN 20 AND 50;
 
 --8
 -- --cliente----->venda--------->itensvenda----------->produto
---        cpf       cod_venda           cod_produto
+--        cpf           cod_venda           cod_produto
 SELECT Cliente.*
 FROM Cliente
 JOIN Venda ON Cliente.cpf = Venda.cpf_cliente
@@ -182,10 +182,203 @@ JOIN ItensVenda ON Produto.codigo = ItensVenda.cod_produto
 WHERE ItensVenda.cod_venda = 1;
 
 
-12--
+--12
 SELECT cod_produto, COUNT(*)
 FROM ItensVenda
 GROUP BY cod_produto;
 
 
-13--
+--13
+SELECT AVG(preco)
+FROM Produto
+WHERE quantidade > 0;
+
+
+--14
+--cliente----->venda------------>itensvenda------------>produto
+--        cpf         cod_venda             cod_produto
+SELECT Cliente.cpf, Cliente.nome, Venda.data, Produto.descricao
+FROM Cliente
+JOIN Venda ON Cliente.cpf = Venda.cpf_cliente
+JOIN ItensVenda ON Venda.cod_venda = ItensVenda.cod_venda
+JOIN Produto ON ItensVenda.cod_produto = Produto.codigo;
+
+
+--15
+SELECT Cliente.cpf, Cliente.nome
+FROM Cliente
+JOIN Venda ON Cliente.cpf = Venda.cpf_cliente
+WHERE Cliente.cidade = 'Monte Carmelo' AND EXTRACT(YEAR FROM data) = 2019;
+
+
+--16
+SELECT MAX(qtde_vendida)
+FROM ItensVenda;
+
+
+--17
+SELECT Venda.cod_venda, Venda.data
+FROM Venda
+JOIN Cliente ON Venda.cpf_cliente = Cliente.cpf
+WHERE Cliente.cidade = 'Uberlandia';
+
+
+--B)
+--CRIACAO DO SCRIPT
+
+CREATE TABLE Aluno(
+    codigo SERIAL,
+    nome VARCHAR(50),
+    dataEntrada DATE,
+    dataConclusao DATE DEFAULT NULL,
+    PRIMARY KEY(codigo)
+);
+
+CREATE TABLE Disciplina(
+    codigo SERIAL,
+    nome VARCHAR(50),
+    cargaHoraria INT,
+    PRIMARY KEY(codigo)
+);
+
+CREATE TABLE Turma(
+    codigo SERIAL,
+    codDisciplina INT,
+    semestre INT CHECK(semestre IN(1, 2)),
+    ano INT,
+    PRIMARY KEY(codigo),
+    FOREIGN KEY(codDisciplina) REFERENCES Disciplina(codigo)
+);
+
+CREATE TABLE Inscricao(
+    codAluno INT,
+    codTurma INT,
+    nota NUMERIC(4,2),
+    faltas INT,
+    PRIMARY KEY(codAluno, codTurma),
+    FOREIGN KEY(codAluno) REFERENCES Aluno(codigo),
+    FOREIGN KEY(codTurma) REFERENCES Turma(codigo)
+);
+
+
+--21
+INSERT INTO Disciplina (nome, cargaHoraria) VALUES
+('Banco de Dados I', 60),
+('Estrutura de Dados I', 80),
+('Cálculo I', 100),
+('Programação Orientada a Objetos', 80),
+('Matemática para Ciencia da Computação', 60),
+('Redes de Computadores', 60),
+('Engenharia de Software', 60);
+
+INSERT INTO Aluno (nome, dataEntrada, dataConclusao) VALUES
+('Ana Souza', '2018-03-01', NULL),
+('Bruno Lima', '2018-03-01', NULL),
+('Carla Mendes', '2019-03-01', NULL),
+('Diego Alves', '2019-08-01', NULL),
+('Elisa Rocha', '2020-03-01', NULL),
+('Felipe Costa', '2020-08-01', NULL),
+('Gabriela Dias', '2018-08-01', '2022-12-15');
+
+INSERT INTO Turma (codDisciplina, semestre, ano) VALUES
+(1, 1, 2019),
+(1, 2, 2020),
+(2, 1, 2019),
+(2, 1, 2020),
+(3, 2, 2018),
+(4, 1, 2020),
+(5, 2, 2020);
+
+INSERT INTO Inscricao (codAluno, codTurma, nota, faltas) VALUES
+(1, 1, 8.50, 2),
+(1, 3, 7.00, 4),
+(2, 1, 6.50, 6),
+(3, 3, 9.00, 1),
+(4, 4, 7.50, 3),
+(5, 6, 8.00, 0),
+(6, 7, 5.50, 8);
+
+
+--22
+UPDATE Disciplina
+SET cargaHoraria = 90
+WHERE nome = 'Banco de Dados I';
+
+UPDATE Disciplina
+SET cargaHoraria = 70
+WHERE nome = 'Redes de Computadores';
+
+UPDATE Aluno
+SET dataConclusao = '2023-06-30'
+WHERE nome = 'Ana Souza';
+
+UPDATE Aluno
+SET nome = 'Bruno Lima Silva'
+WHERE nome = 'Bruno Lima';
+
+UPDATE Turma
+SET ano = 2021
+WHERE codDisciplina = 6 AND semestre = 1 AND ano = 2020;
+
+UPDATE Turma
+SET semestre = 2
+WHERE codDisciplina = 7 AND ano = 2020 AND semestre = 2;
+
+UPDATE Inscricao
+SET nota = 9.00
+WHERE codAluno = 2 AND codTurma = 1;
+
+UPDATE Inscricao
+SET faltas = 5
+WHERE codAluno = 4 AND codTurma = 4;
+
+
+--23
+DELETE FROM Inscricao
+WHERE codAluno = 6 AND codTurma = 7;
+
+DELETE FROM Turma
+WHERE codDisciplina = 5 AND ano = 2020 AND semestre = 2;
+
+DELETE FROM Aluno
+WHERE nome = 'Gabriela Dias';
+
+DELETE FROM Disciplina
+WHERE nome = 'Redes de Computadores';
+
+
+--24
+SELECT Turma.codigo
+FROM Turma
+JOIN Inscricao ON Turma.codigo = Inscricao.codTurma
+GROUP BY Turma.codigo
+HAVING COUNT(Inscricao.codAluno) > 3;
+
+
+--25
+SELECT Turma.ano, Turma.semestre, AVG(Inscricao.faltas), AVG(Inscricao.nota)
+FROM Inscricao
+JOIN Turma ON Inscricao.codTurma = Turma.codigo
+GROUP BY Turma.ano, Turma.semestre;
+
+
+--26
+SELECT Inscricao.codTurma, AVG(Inscricao.faltas), AVG(Inscricao.nota)
+FROM Inscricao
+GROUP BY Inscricao.codTurma;
+
+
+--27
+SELECT Disciplina.nome, COUNT(*)
+FROM Disciplina
+WHERE NOT EXISTS(
+    SELECT 1
+    FROM Turma
+    JOIN Inscricao ON Turma.codigo = Inscricao.codTurma
+    WHERE Turma.codDisciplina = Disciplina.codigo
+      AND Turma.ano = 2020
+      AND Turma.semestre = 2
+);
+
+
+--28

@@ -288,3 +288,34 @@ SELECT EXTRACT(YEAR FROM data), COUNT (*)
 FROM Venda
 GROUP BY EXTRACT(YEAR FROM data)
 HAVING COUNT(*) >= 2;
+
+SELECT Disciplina.codigo
+FROM Disciplina
+JOIN Turma ON Disciplina.codigo = Turma.codDisciplina
+GROUP BY Disciplina.codigo
+HAVING COUNT(Turma.codigo) > 2;
+
+SELECT Aluno.codigo, COUNT(*)
+FROM Aluno
+JOIN Inscricao ON Aluno.codigo = Inscricao.codAluno
+GROUP BY Aluno.codigo
+HAVING COUNT(*) < 2;
+
+SELECT Inscricao.codTurma, AVG(nota)
+FROM Inscricao
+GROUP BY Inscricao.codTurma
+HAVING AVG(nota) >= 7;
+
+--A, B e C
+SELECT codDisciplina, COUNT(*)
+FROM Turma
+GROUP BY codDisciplina;
+
+SELECT codTurma, COUNT(*)
+FROM Inscricao
+GROUP BY codTurma;
+
+SELECT codDisciplina
+FROM Turma
+GROUP BY codDisciplina
+HAVING COUNT(codigo) = 1;
